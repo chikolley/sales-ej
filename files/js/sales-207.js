@@ -21,6 +21,8 @@ document.addEventListener('DOMContentLoaded', function () {
         '副教材': 'supplement',
     };
 
+    const CATEGORY_ORDER = ['グッズ', '井荻', '文具', 'パン', '飲料', '教科書', '副教材', '検定'];
+
     const SKIP_KEYWORDS = ['両替', '*SDカード*', '日計', '電子ジャーナル'];
 
     // ---- DOM参照 ----
@@ -326,8 +328,14 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!analysisResult || Object.keys(analysisResult).length === 0) {
             resultTables.innerHTML = '<p>指定された期間のデータがありません。</p>';
         } else {
-            // カテゴリをソート
-            const sortedCategories = Object.keys(analysisResult).sort();
+            // カテゴリを指定順序でソート
+            const sortedCategories = Object.keys(analysisResult).sort((a, b) => {
+                const indexA = CATEGORY_ORDER.indexOf(a);
+                const indexB = CATEGORY_ORDER.indexOf(b);
+                const orderA = indexA === -1 ? CATEGORY_ORDER.length : indexA;
+                const orderB = indexB === -1 ? CATEGORY_ORDER.length : indexB;
+                return orderA - orderB;
+            });
 
             // ---- 明細テーブル ----
             let detailRows = '';
