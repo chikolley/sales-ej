@@ -198,7 +198,8 @@ a.button:hover {
     font-weight: bold;
 }
 .form-group input[type="file"],
-.form-group input[type="submit"] {
+.form-group input[type="submit"],
+.form-group input[type="button"] {
     padding: 8px;
     width: 100%;
     max-width: 300px;
