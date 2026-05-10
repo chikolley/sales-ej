@@ -396,7 +396,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     </thead>
                     <tbody>${summaryRows}</tbody>
                 </table>
-                
+
+                <h3 style="margin-top:40px;">詳細</h3>
                 <table class="detailTable">
                     <thead>
                         <tr>
