@@ -309,6 +309,10 @@ a.button:hover {
     display: block;
 }
 
+table.summaryTable {
+    margin-bottom: 40px;
+}
+
 .journal-content.visible {
     padding: 20px;
 }
