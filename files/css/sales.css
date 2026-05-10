@@ -237,7 +237,7 @@ a.button:hover {
     color: #999;
     font-size: 14px;
 }
-.form-group input[type="submit"] {
+.form-group input[type="submit"], input[type="button"] {
     background-color: #A5D6A7;
     color: black;
     border: none;
