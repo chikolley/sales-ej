@@ -13,10 +13,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const CATEGORY_CLASS_MAP = {
         'グッズ': 'goods',
         'パン':   'bread',
+        '飲料':   'drink',
         '井荻':   'iogi',
         '文具':   'stationery',
         '検定':   'exam',
-        '飲料':   'drink',
+        '教科書': 'text',
+        '副教材': 'supplement',
     };
 
     const SKIP_KEYWORDS = ['両替', '*SDカード*', '日計', '電子ジャーナル'];
