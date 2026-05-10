@@ -603,7 +603,17 @@ document.addEventListener('DOMContentLoaded', function () {
             hideError();
         });
     }
-
+    // 当日の日付を開始・終了の初期値にセット
+    const today = new Date();
+    const todayY = today.getFullYear();
+    const todayM = today.getMonth() + 1;
+    const todayD = today.getDate();
+    
+    for (const prefix of ['start', 'end', 'rerun_start', 'rerun_end']) {
+        document.getElementById(prefix + '_year_input').value  = todayY;
+        document.getElementById(prefix + '_month_input').value = todayM;
+        document.getElementById(prefix + '_day_input').value   = todayD;
+    }
     // ---- ページ初期化: キャッシュが残っていれば result-section を表示しない ----
     // (GitHub Pages版はサーバーサイドで結果を出さないので常にアップロードフォームから始まる)
     resultSection.classList.remove('visible');
