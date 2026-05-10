@@ -183,6 +183,8 @@ a.button:hover {
 .category-stationery { background-color: #f0e6ff; }
 .category-exam { background-color: #d0f0c0; }
 .category-drink { background-color: #ffe4b5; }
+.category-text { background-color: #fde8d0; }
+.category-supplement { background-color: #e8eaf6; }
 .upload-form {
     background: #f9f9f9;
     padding: 20px;
