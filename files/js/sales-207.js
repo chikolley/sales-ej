@@ -385,6 +385,18 @@ document.addEventListener('DOMContentLoaded', function () {
             </tr>`;
 
             resultTables.innerHTML = `
+                <h3 style="margin-top:40px;">集計結果</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>カテゴリ</th>
+                            <th class="amount">販売数合計</th>
+                            <th class="amount">販売額合計</th>
+                        </tr>
+                    </thead>
+                    <tbody>${summaryRows}</tbody>
+                </table>
+                
                 <table>
                     <thead>
                         <tr>
@@ -397,17 +409,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <tbody>${detailRows}</tbody>
                 </table>
 
-                <h3 style="margin-top:40px;">集計結果</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>カテゴリ</th>
-                            <th class="amount">販売数合計</th>
-                            <th class="amount">販売額合計</th>
-                        </tr>
-                    </thead>
-                    <tbody>${summaryRows}</tbody>
-                </table>
+
             `;
         }
 
