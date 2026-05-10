@@ -3,145 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>電子ジャーナル分析 | WCOOP</title>
+    <title>電子ジャーナル分析</title>
     <link rel="stylesheet" href="files/css/style.css">
     <link rel="stylesheet" href="files/css/sales.css">
-    <link rel="stylesheet" href="files/css/sales-a.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/png" sizes="32x32" href="files/img/sales_logo_white.png">
     <link rel="apple-touch-icon" sizes="180x180" href="files/img/sales_logo_white.png">
 </head>
 <body>
-    <header class="header"></header>
-    <main class="main-content">
-        <div class="container">
-            <div class="col">
-                <h1>電子ジャーナル分析</h1>
-                <h2>&lt; メインレジ &gt;</h2>
-
-                <!-- サブレジに切り替え -->
-                <!-- <div class="sub-regi-toggle"> -->
-                    <!-- <a href="../b/" class="button" alt="サブレジに切り替え"> -->
-                        <!-- <i class="fa-solid fa-arrow-right"></i> サブレジに切り替え -->
-                    <!-- </a> -->
-                <!-- </div> -->
-
-                <!-- アップロードフォーム -->
-                <div class="upload-form" id="upload-form-section">
-                    <h2>ファイルアップロード</h2>
-                    <p class="instructions">EJFILE.TXTをアップロードしてください</p>
-                    <p id="error-message" style="color:red; display:none;"></p>
-
-                    <div class="form-group">
-                        <div id="drop-zone" class="drop-zone" role="button" tabindex="0" aria-label="ファイルを選択">
-                            <div class="drop-zone-text" id="drop-zone-text">
-                                <i class="fa-solid fa-file-arrow-up" style="font-size:48px;color:#4CAF50;margin-bottom:15px;"></i>
-                                <p class="desktop-only">ドラッグ&ドロップ</p>
-                                <p class="desktop-only">or</p>
-                                <p>ファイルを選択</p>
-                                <p style="font-size:14px;color:#999;margin-top:10px;">(.txtファイル)</p>
-                            </div>
-                            <div id="file-name-display" class="file-name"></div>
-                        </div>
-                        <input type="file" id="journal_file" accept=".txt,.TXT,text/plain" style="display:none;">
-                    </div>
-
-                    <div class="date-inputs">
-                        <div class="form-group">
-                            <div class="date-field">
-                                <div class="date-field-title">開始日</div>
-                                <div class="date-selector">
-                                    <input type="number" id="start_year_input" min="2020" max="2100" placeholder="年">
-                                    <input type="number" id="start_month_input" min="1" max="12" placeholder="月">
-                                    <input type="number" id="start_day_input" min="1" max="31" placeholder="日">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="date-field">
-                                <div class="date-field-title">終了日</div>
-                                <div class="date-selector">
-                                    <input type="number" id="end_year_input" min="2020" max="2100" placeholder="年">
-                                    <input type="number" id="end_month_input" min="1" max="12" placeholder="月">
-                                    <input type="number" id="end_day_input" min="1" max="31" placeholder="日">
-                                </div>
-                            </div>
+    <main class="container" style="max-width: 600px;">
+        <div class="col">
+            <h1>電子ジャーナル分析</h1>
+            <h2>&lt; レジ選択 &gt;</h2>
+            <ul>
+                <a href="main/" class="button" alt="インクカスカス通常レジ">
+                    <div class="item-center">
+                        <div class="label-only">
+                            メインレジ
                         </div>
                     </div>
-
-                    <div class="form-group">
-                        <input type="button" id="run-button" class="execution" value="分析実行">
-                    </div>
-                </div>
-
-                <!-- 結果セクション -->
-                <div class="result-section" id="result-section">
-                    <h2 id="result-title">分析結果</h2>
-
-                    <!-- 日付再指定パネル -->
-                    <div class="rerun-date-form">
-                        <button type="button" id="rerun-toggle-button" class="rerun-toggle-button" aria-expanded="false" aria-controls="rerun-date-panel">
-                            <span class="toggle-text">日付を変更</span>
-                            <span class="toggle-icon" aria-hidden="true"><i class="fa-solid fa-angle-right"></i></span>
-                        </button>
-                        <div id="rerun-date-panel" class="rerun-date-panel">
-                            <div class="rerun-date-panel-inner">
-                                <div class="date-inputs">
-                                    <div class="form-group">
-                                        <div class="date-field">
-                                            <div class="date-field-title">開始日</div>
-                                            <div class="date-selector">
-                                                <input type="number" id="rerun_start_year_input" min="2020" max="2100" placeholder="年">
-                                                <input type="number" id="rerun_start_month_input" min="1" max="12" placeholder="月">
-                                                <input type="number" id="rerun_start_day_input" min="1" max="31" placeholder="日">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <div class="date-field">
-                                            <div class="date-field-title">終了日</div>
-                                            <div class="date-selector">
-                                                <input type="number" id="rerun_end_year_input" min="2020" max="2100" placeholder="年">
-                                                <input type="number" id="rerun_end_month_input" min="1" max="12" placeholder="月">
-                                                <input type="number" id="rerun_end_day_input" min="1" max="31" placeholder="日">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <input type="button" id="rerun-button" class="execution" value="再計算">
-                                </div>
-                            </div>
+                </a>
+                <a href="#" class="button" alt="インクしっかり臨時レジ">
+                    <div class="item-center">
+                        <div class="label-only">
+                            サブレジ
                         </div>
                     </div>
-
-                    <!-- テーブル出力エリア -->
-                    <div id="result-tables"></div>
-
-                    <!-- ジャーナル表示 -->
-                    <div class="journal-display-container" id="journal-display-container" style="display:none;">
-                        <button type="button" id="journal-toggle-button" class="journal-toggle-button" aria-expanded="false" aria-controls="journal-content">
-                            <span class="toggle-text">ジャーナルを表示</span>
-                            <span class="toggle-icon" aria-hidden="true"><i class="fa-solid fa-angle-right"></i></span>
-                        </button>
-                        <div id="journal-content" class="journal-content">
-                            <pre id="journal-pre"></pre>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- リセットボタン -->
-                <!-- <div class="reset-button-container" id="reset-button-container"> -->
-                    <!-- <button id="reset-button" class="reset-button" title="他のデータを確認"> -->
-                        <!-- <i class="fa-solid fa-rotate"></i> -->
-                    <!-- </button> -->
-                <!-- </div> -->
-            </div>
+                </a>
+            </ul>
+        </div>
+        <div class="policy">
+            <p>このツールは、電子ジャーナルの分析を目的としています。<br>処理はすべてフロントエンドで行われ、<br>サーバへの情報送信は行われません。</p>
+            <p>SDカードを利用してレジから電子ジャーナルを取り出す必要があります。<br>
+                レジの操作方法は<a href="#" target="_blank">こちら</a>をご参照ください。</p>
         </div>
     </main>
-
-    <!-- Encoding.js: Shift-JIS → UTF-8 変換 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/encoding-japanese/2.0.0/encoding.min.js"></script>
-    <script src="files/js/sales-207.js"></script>
 </body>
-</html>
