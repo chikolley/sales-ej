@@ -1,0 +1,375 @@
+/* Shared styles for WCOOP sales pages (a and b) */
+.journal-display-container {
+    margin: 30px 0;
+}
+
+.journal-toggle-button {
+    width: 100%;
+    text-align: center;
+    padding: 14px 18px;
+    margin-bottom: 0;
+    background-color: #64B5F6;
+    color: white;
+    border: none;
+    border-bottom: 1px solid #ddd;
+    border-radius: 10px 10px 0 0;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+.journal-toggle-button:hover {
+    background-color: #42A5F5;
+}
+.journal-toggle-button span,
+.journal-toggle-button i {
+    color: white;
+}
+.journal-toggle-button .toggle-text {
+    width: 100%;
+    text-align: center;
+}
+.journal-toggle-button .toggle-icon {
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%) rotate(90deg);
+    transition: transform 0.25s ease;
+    line-height: 1;
+}
+.journal-toggle-button[aria-expanded="true"] .toggle-icon {
+    transform: translateY(-50%) rotate(-90deg);
+}
+.journal-toggle-button[aria-expanded="true"] {
+    border-bottom: none;
+}
+
+.journal-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease;
+    margin-top: 0;
+    background-color: #f5f5f5;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+}
+.journal-content.visible {
+    max-height: 600px;
+    border: 1px solid #ddd;
+    overflow-y: auto;
+}
+.journal-content pre {
+    margin: 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.rerun-date-form {
+    margin: 20px 0 28px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    overflow: hidden;
+}
+.rerun-toggle-button {
+    width: 100%;
+    text-align: center;
+    padding: 14px 18px;
+    margin-bottom: 0;
+    border: none;
+    border-radius: 0;
+    background-color: #fafafa;
+    color: #000;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+.rerun-toggle-button:hover {
+    background-color: #f1f1f1;
+}
+.rerun-toggle-button span,
+.rerun-toggle-button i {
+    color: #000;
+}
+.rerun-toggle-button .toggle-text {
+    width: 100%;
+    text-align: center;
+}
+.rerun-toggle-button .toggle-icon {
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%) rotate(90deg);
+    transition: all 0.25s ease;
+    line-height: 1;
+}
+.rerun-toggle-button[aria-expanded="true"] .toggle-icon {
+    transform: translateY(-50%) rotate(-90deg);
+}
+.rerun-date-panel {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease;
+}
+.rerun-date-panel.visible {
+    max-height: 520px;
+}
+.rerun-date-panel-inner {
+    padding: 16px 18px 18px;
+}
+.rerun-date-form .date-inputs {
+    margin-top: 12px;
+}
+.rerun-date-form .execution {
+    margin-top: 8px;
+}
+.col {
+    width: 80%;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+th {
+    background-color: #f2f2f2;
+    text-align: left;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    margin: 5px 0;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+a {
+    color: #007BFF !important;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+a.button:hover {
+    text-decoration: none;
+}
+
+.amount {
+    text-align: right;
+}
+.category-goods { background-color: #ffe4e1; }
+.category-bread { background-color: #fffacd; }
+.category-iogi { background-color: #e0ffff; }
+.category-stationery { background-color: #f0e6ff; }
+.category-exam { background-color: #d0f0c0; }
+.category-drink { background-color: #ffe4b5; }
+.upload-form {
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+.form-group {
+    margin-bottom: 15px;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+.form-group input[type="file"],
+.form-group input[type="submit"] {
+    padding: 8px;
+    width: 100%;
+    max-width: 300px;
+}
+.date-field {
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 4px;
+    background: white;
+}
+.date-field-title {
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #333;
+}
+.date-selector {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+.date-selector input[type="number"] {
+    width: 80px;
+    padding: 8px;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+
+    /* -moz-appearance: textfield; */
+}
+.date-selector input[type="number"]::-webkit-inner-spin-button,
+.date-selector input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.date-selector input[type="number"]::placeholder {
+    color: #999;
+    font-size: 14px;
+}
+.form-group input[type="submit"] {
+    background-color: #A5D6A7;
+    color: black;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 18px;
+}
+.form-group input[type="submit"]:hover {
+    background-color: #81C784;
+}
+
+.date-inputs {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+.drop-zone {
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    padding: 40px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: #fafafa;
+    outline: none;
+}
+.drop-zone:hover {
+    border-color: #4CAF50;
+    background-color: #f0f8f0;
+}
+.drop-zone:focus {
+    border-color: #4CAF50;
+    background-color: #f0f8f0;
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+}
+.drop-zone:active {
+    background-color: #e8f5e9;
+    transform: scale(0.98);
+}
+.drop-zone.dragover {
+    border-color: #4CAF50;
+    background-color: #e8f5e9;
+    transform: scale(1.02);
+}
+.drop-zone-text {
+    font-size: 16px;
+    color: #666;
+}
+.file-name {
+    margin-top: 10px;
+    font-weight: bold;
+    color: #4CAF50;
+}
+.drop-zone-text.hidden {
+    display: none;
+}
+
+.upload-form {
+    display: block;
+}
+.upload-form.hidden {
+    display: none;
+}
+.result-section {
+    display: none;
+}
+.result-section.visible {
+    display: block;
+}
+
+.journal-content.visible {
+    padding: 20px;
+}
+
+.reset-button-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: none;
+}
+.reset-button-container.visible {
+    display: block;
+}
+.reset-button {
+    padding: 0;
+    background-color: #90CAF9;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+}
+.reset-button:hover {
+    background-color: #64B5F6;
+}
+.reset-button i {
+    margin: 0;
+}
+.desktop-only {
+    display: block;
+}
+@media (max-width: 1000px) {
+    .col {
+        width: 100%;
+    }
+    .date-inputs {
+        flex-direction: column;
+    }
+    .date-selector {
+        justify-content: center;
+    }
+    .form-group input[type="file"],
+    .form-group input[type="date"],
+    .form-group input[type="submit"] {
+        width: 100%;
+    }
+    .desktop-only {
+        display: none;
+    }
+    .drop-zone {
+        padding: 30px 20px;
+        -webkit-tap-highlight-color: rgba(76, 175, 80, 0.2);
+    }
+    .drop-zone-text {
+        font-size: 18px;
+        font-weight: 500;
+    }
+}

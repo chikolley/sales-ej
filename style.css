@@ -1,0 +1,392 @@
+:root {
+    --page-pad: clamp(10px, 2vw, 24px);
+}
+
+
+/* ===== 全体設定（通常のブロックレイアウトに戻す） ===== */
+body {
+    background: #f5f7fa;
+    font-family: "Segoe UI", sans-serif;
+    margin: 0;
+    padding: var(--page-pad);
+    text-align: center;  /* テキストだけ中央（レイアウトは影響しない） */
+    color: #333;
+}
+
+header {
+    position: fixed;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* ===== コンテナ ===== */
+.container {
+    /* width: 85%; */
+    height: auto;
+    min-height: 92vh;
+    margin: 0 auto;   /* 横中央寄せ */
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-sizing: border-box;
+
+    /* 子要素は縦並び（デフォルト） */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* ===== タイトル ===== */
+h2 {
+    margin-bottom: 25px;
+    font-size: 20px;
+    color: #333;
+    text-align: center;
+}
+
+/* ===== 結果項目 ===== */
+.item-par {
+    width: 60%;
+    padding: 12px 0;
+    font-size: 1.1rem;
+    background: #f8fafc;
+    border-radius: 10px;
+    border: 1px solid #e2e6ea;
+    margin-bottom: 12px;
+    text-align: center;
+    display: grid;
+    grid-template-columns: auto 1fr;
+}
+.item-ver {
+    box-sizing: border-box;
+    width: 60%;
+    padding: 0 12px;
+    font-size: 1.1rem;
+    background: #f8fafc;
+    border-radius: 10px;
+    border: 1px solid #e2e6ea;
+    margin-bottom: 12px;
+    text-align: center;
+    display: grid;
+    grid-template-rows: auto 1fr;
+}
+
+/* ラベルなし中央配置 */
+.item-center {
+    width: 60%;
+    padding: 12px 0;
+    font-size: 1.1rem;
+    background: #f8fafc;
+    border-radius: 10px;
+    border: 1px solid #e2e6ea;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.label {
+    font-weight: bold;
+}
+.item-par .label {
+    width: 135px;
+}
+.item-ver .label {
+    box-sizing: border-box;
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px dashed #888;
+    padding: 10px 0;
+}
+
+.label-only {
+    font-weight: bold;
+    border: none;
+}
+
+.value {
+    font-size: 1.1rem;
+    overflow-x: auto;
+    white-space: nowrap;
+    text-align: center;
+    margin: 0 auto;
+    flex: 1; /* item-par の場合は残りスペースを占有 */
+}
+.item-par .value {
+    padding: 0 10px;
+}
+.item-ver .value {
+    padding: 10px 0;
+}
+
+a, a:visited, a:hover, a:active, a:focus {
+    width: 60%;
+    text-decoration: none;
+    color: inherit;
+}
+
+
+/* QR コード中央配置 */
+.qr {
+    margin-top: 20px;
+    text-align: center;
+}
+img {
+    max-width: 100%;
+    width: 400px;
+    height: auto;
+}
+
+/* ===== メニューバー ===== */
+
+.navbar {
+    position: fixed;
+    top: var(--page-pad);
+    right: var(--page-pad);
+    z-index: 9999;
+    display: flex;
+    width: fit-content;
+    padding: 10px 0;
+    padding-top: 30px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    border-top-right-radius: 16px;
+    flex-direction: column;
+    background: #ffffff;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+}
+
+.menu-overlay-btn {
+    position: fixed;
+    top: var(--page-pad);
+    right: var(--page-pad);
+    font-size: 1.4rem;
+    z-index: 10000;
+    width: fit-content;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+.menu-overlay-btn i {
+    display: block;
+    color: #333;
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.menu-overlay-btn i.hidden {
+    display: none;
+}
+
+.navbar.close {
+    display: none;
+}
+
+.navbar a {
+    display: block;
+    width: fit-content;
+    text-decoration: none;
+    padding: 8px 12px;
+    margin: 6px 12px;
+    color: #333;
+}
+.navbar a:hover {
+    background: #eef3ff;
+    border-radius: 8px;
+}
+
+/* 戻るボタン */
+.back {
+    border-radius: 5%;
+    padding: 10px 20px;
+    text-decoration: none;
+    color: #333;
+}
+.back:hover {
+    background: #c7d7ff;
+}
+
+.form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* item-ver を中央寄せ */
+}
+
+.form .item-ver {
+    padding: 10px;
+}
+
+.form .item-ver .label {
+    padding-top: 0;
+    border: none;
+}
+
+button {
+    width: 60%;
+    padding: 12px 0;
+    font-size: 1.1rem;
+    background: #4a90e2;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-bottom: 12px;
+}
+
+
+a .item-center {
+    width: 100%;
+}
+a .item-center:hover {
+    background: #eef3ff;
+    border-color: #b0c4ff;
+}
+
+a .item-center .label-only {
+    color: #333;
+    text-decoration: none;
+}
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+    margin-bottom: 20px;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.user-table {
+    width: 800px;
+    border: #333 solid 1px;
+    border-collapse: collapse;
+    margin: 0 auto;
+}
+.user-table .clickable-row:hover {
+    background-color: #eef3ff;
+    cursor: pointer;
+}
+
+.user-table .deleted {
+    background-color: #fdd;
+    color: #900;
+}
+.user-table .deleted:hover {
+    background-color: #fbb;
+    color: #700;
+}
+
+.user-table th, .user-table td {
+    border: #333 solid 1px;
+    text-align: center;
+    padding: 4px;
+}
+
+.order-table {
+    width: 100%;
+    border: #333 solid 1px;
+    border-collapse: collapse;
+    margin: 0 auto;
+}
+.order-table th, .order-table td {
+    border: #333 solid 1px;
+    padding: 8px;
+}
+
+.info-table {
+    width: 100%;
+    border: #333 solid 1px;
+    border-collapse: collapse;
+    margin: 0 auto;
+}
+.info-table th, .info-table td {
+    border: #333 solid 1px;
+    text-align: left;
+    padding: 8px;
+}
+
+.delete-btn {
+    color: #f44336;
+    cursor: pointer;
+    border-radius: 10px;
+}
+
+.delete-btn:hover {
+    color: #d32f2f;
+    background-color: #ffebee;
+}
+
+.restore-btn {
+    color: #4caf50;
+    cursor: pointer;
+    border-radius: 10px;
+}
+.restore-btn:hover {
+    color: #388e3c;
+    background-color: #e8f5e9;
+}
+
+.approve-btn {
+    color: #4caf50;
+    cursor: pointer;
+    border-radius: 10px;
+    background-color: #e8f5e9;
+}
+.approve-btn:hover {
+    color: #388e3c;
+    background-color: #c8e6c9;
+}
+
+.reject-btn {
+    color: #f44336;
+    cursor: pointer;
+    border-radius: 10px;
+    background-color: #ffebee;
+}
+.reject-btn:hover {
+    color: #d32f2f;
+    background-color: #ffcdd2;
+}
+
+.note {
+    font-size: 0.7rem;
+    color: #666;
+    display: block;
+    margin-bottom: 10px;
+}
+
+select {
+    text-align-last: center;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #333;
+    margin: 20px 0;
+}
+
+@media (max-width: 480px) {
+    .container {
+        min-height: 93vh;
+    }
+    .item-par, .item-ver, .item-center, button {
+        width: 98%;
+    }
+    a, a:visited, a:hover, a:active, a:focus {
+        width: 98%;
+    }
+    .navbar a:hover{
+        width: fit-content;
+    }
+}
