@@ -225,6 +225,18 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         resultTitle.textContent = titleText;
 
+        const regLabel = (window.SalesPage === window.SalesPageMain)
+            ? 'メインレジ (XE-A207)'
+            : (window.SalesPage === window.SalesPageSub)
+                ? 'サブレジ (XE-A147)'
+                : null;
+
+        const regIndicator = document.getElementById('reg-indicator');
+        if (regIndicator) {
+            regIndicator.textContent = regLabel || '';
+            regIndicator.style.display = regLabel ? '' : 'none';
+        }
+        
         if (!analysisResult || Object.keys(analysisResult).length === 0) {
             resultTables.innerHTML = '<p>指定された期間のデータがありません。</p>';
         } else {
