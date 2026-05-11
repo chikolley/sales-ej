@@ -576,19 +576,23 @@ document.addEventListener('DOMContentLoaded', function () {
             hideError();
             const startDate = getDateString('start');
             const endDate   = getDateString('end');
-
-            // キャッシュが残っていれば再利用（ファイル未選択でも動く）
+    
+            if (startDate && endDate && endDate < startDate) {
+                alert('日付の入力が不正です');
+                return;
+            }
+    
             const cache = getJournalCache();
             if (fileInput.files.length === 0 && cache.content) {
                 runAnalysis(cache.content, cache.fileName, startDate, endDate);
                 return;
             }
-
+    
             if (fileInput.files.length === 0) {
-                showError('ファイルが選択されていません。');
+                alert('ファイルが選択されていません。');
                 return;
             }
-
+    
             readAndAnalyze(fileInput.files[0], startDate, endDate);
         });
     }
@@ -603,9 +607,17 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             const startDate = getDateString('rerun_start');
             const endDate   = getDateString('rerun_end');
+    
+            // 終了日が開始日より前の場合はエラー表示して中断
+            if (startDate && endDate && endDate < startDate) {
+                alert('日付の入力が不正です');
+                return;
+            }
+            rerunToggleButton.setAttribute('aria-expanded', 'false');
+            rerunDatePanel.classList.remove('visible');
+    
             runAnalysis(cache.content, cache.fileName, startDate, endDate);
-
-            // メインの日付入力にも反映
+    
             if (startDate) setDateInputs('start', startDate);
             if (endDate)   setDateInputs('end', endDate);
         });
