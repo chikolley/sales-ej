@@ -158,14 +158,18 @@ document.addEventListener('DOMContentLoaded', function () {
     function exportPdf() {
         const detailTable   = document.querySelector('.detailTable');
         const detailHeading = document.querySelector('.detail-heading');
-
+    
         if (!includeDetail()) {
             if (detailTable)   detailTable.classList.add('print-hide');
             if (detailHeading) detailHeading.classList.add('print-hide');
         }
-
+    
+        const originalTitle = document.title;
+        document.title = getFilenameBase();
+    
         window.print();
-
+    
+        document.title = originalTitle;
         if (detailTable)   detailTable.classList.remove('print-hide');
         if (detailHeading) detailHeading.classList.remove('print-hide');
     }
