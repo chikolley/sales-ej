@@ -476,6 +476,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
+            document.activeElement.blur();
+            
             readAndAnalyze(fileInput.files[0], startDate, endDate);
         });
     }
