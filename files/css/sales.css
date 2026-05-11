@@ -229,6 +229,7 @@ a.button:hover {
     align-items: center;
 }
 .date-selector input[type="text"] {
+    font-size: 16px;
     flex: 1;
     min-width: 0;
     padding: 8px;
