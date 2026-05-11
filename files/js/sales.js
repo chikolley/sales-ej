@@ -349,6 +349,8 @@ document.addEventListener('DOMContentLoaded', function () {
         rerunToggleButton.setAttribute('aria-expanded', 'false');
         journalContent.classList.remove('visible');
         journalToggleButton.setAttribute('aria-expanded', 'false');
+        if (startDate) setDateInputs('rerun_start', startDate);
+        if (endDate)   setDateInputs('rerun_end', endDate);
     }
 
     // ---- 分析実行 ----
@@ -559,7 +561,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
-    
+
     // ---- 初期状態 ----
     resultSection.classList.remove('visible');
     uploadFormSection.classList.remove('hidden');
