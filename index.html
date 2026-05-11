@@ -49,9 +49,14 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <div class="date-field">
-                                <div class="date-field-title">終了日</div>
-                                <div class="date-selector">
+                            <div class="date-field date-field-end" id="end-date-field">
+                                <div class="date-field-title">
+                                    <label class="end-date-toggle">
+                                        <input type="checkbox" id="end-date-enable">
+                                        終了日を指定
+                                    </label>
+                                </div>
+                                <div class="date-selector" id="end-date-selector">
                                     <input type="text" inputmode="numeric" id="end_year_input" min="2020" max="2100" placeholder="年">
                                     <input type="text" inputmode="numeric" id="end_month_input" min="1" max="12" placeholder="月">
                                     <input type="text" inputmode="numeric" id="end_day_input" min="1" max="31" placeholder="日">
@@ -68,7 +73,7 @@
                 <!-- 結果セクション -->
                 <div class="result-section" id="result-section">
                     <h2 id="result-title">分析結果</h2>
-                    <p id="reg-indicator" class="reg-indicator"></p>
+                    <p id="reg-indicator" style="text-align:center; color:#888; font-size:14px; margin-top:-16px; margin-bottom:8px;"></p>
                     <!-- 日付再指定パネル -->
                     <div class="rerun-date-form">
                         <button type="button" id="rerun-toggle-button" class="rerun-toggle-button" aria-expanded="false" aria-controls="rerun-date-panel">
@@ -89,9 +94,14 @@
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <div class="date-field">
-                                            <div class="date-field-title">終了日</div>
-                                            <div class="date-selector">
+                                        <div class="date-field date-field-end" id="rerun-end-date-field">
+                                            <div class="date-field-title">
+                                                <label class="end-date-toggle">
+                                                    <input type="checkbox" id="rerun-end-date-enable">
+                                                    終了日を指定
+                                                </label>
+                                            </div>
+                                            <div class="date-selector" id="rerun-end-date-selector">
                                                 <input type="text" inputmode="numeric" id="rerun_end_year_input" min="2020" max="2100" placeholder="年">
                                                 <input type="text" inputmode="numeric" id="rerun_end_month_input" min="1" max="12" placeholder="月">
                                                 <input type="text" inputmode="numeric" id="rerun_end_day_input" min="1" max="31" placeholder="日">
