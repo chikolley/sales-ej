@@ -28,7 +28,7 @@ header {
 
 /* ===== コンテナ ===== */
 .container {
-    /* width: 85%; */
+    max-width: 1200px;
     height: auto;
     min-height: 92vh;
     margin: 0 auto;   /* 横中央寄せ */
