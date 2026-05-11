@@ -384,6 +384,7 @@ a.button:hover {
 .result-action-btn.switch:hover {
     background-color: #81C784;
     text-decoration: none;
+    width: auto;
 }
 
 .desktop-only {
