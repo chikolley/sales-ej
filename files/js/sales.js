@@ -118,14 +118,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ---- 日付ユーティリティ ----
     function getDateString(prefix) {
-        // 終了日の場合はチェックボックスが無効ならnullを返す
+        // 終了日の場合はチェックボックスが無効なら開始日と同じ値を返す
         if (prefix === 'end') {
             const cb = document.getElementById('end-date-enable');
-            if (cb && !cb.checked) return null;
+            if (cb && !cb.checked) return getDateString('start');
         }
         if (prefix === 'rerun_end') {
             const cb = document.getElementById('rerun-end-date-enable');
-            if (cb && !cb.checked) return null;
+            if (cb && !cb.checked) return getDateString('rerun_start');
         }
         const y = document.getElementById(prefix + '_year_input').value;
         const m = document.getElementById(prefix + '_month_input').value;
