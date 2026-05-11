@@ -258,10 +258,17 @@ a.button:hover {
 }
 
 .date-inputs {
+    max-width: 100%;
     display: flex;
     gap: 20px;
     justify-content: center;
 }
+
+.data-inputs .form-group {
+    flex: 1;
+    min-width: 0;
+}
+
 .drop-zone {
     border: 2px dashed #ccc;
     border-radius: 8px;
