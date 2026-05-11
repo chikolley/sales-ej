@@ -630,17 +630,23 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ---- リセットボタン ----
-    if (resetButton) {
-        resetButton.addEventListener('click', function () {
-            uploadFormSection.classList.remove('hidden');
-            resultSection.classList.remove('visible');
-            resetButtonContainer.classList.remove('visible');
-
-            fileInput.value = '';
-            fileNameDisplay.textContent = '';
-            dropZoneText.classList.remove('hidden');
-            clearJournalCache();
-            hideError();
+    if (rerunButton) {
+        rerunButton.addEventListener('click', function () {
+            const cache = getJournalCache();
+            if (!cache.content) {
+                alert('保持されたファイル情報がありません。再度ファイルをアップロードしてください。');
+                return;
+            }
+            const startDate = getDateString('rerun_start');
+            const endDate   = getDateString('rerun_end');
+    
+            rerunToggleButton.setAttribute('aria-expanded', 'false');
+            rerunDatePanel.classList.remove('visible');
+    
+            runAnalysis(cache.content, cache.fileName, startDate, endDate);
+    
+            if (startDate) setDateInputs('start', startDate);
+            if (endDate)   setDateInputs('end', endDate);
         });
     }
     // 当日の日付を開始・終了の初期値にセット
