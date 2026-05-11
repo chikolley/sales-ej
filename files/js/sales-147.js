@@ -581,6 +581,13 @@ document.addEventListener('DOMContentLoaded', function () {
             const startDate = getDateString('rerun_start');
             const endDate   = getDateString('rerun_end');
     
+            // 終了日が開始日より前の場合はエラー表示して中断
+            if (startDate && endDate && endDate < startDate) {
+                showError('入力が不正です');
+                return;
+            }
+    
+            hideError();
             rerunToggleButton.setAttribute('aria-expanded', 'false');
             rerunDatePanel.classList.remove('visible');
     
