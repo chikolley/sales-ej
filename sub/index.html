@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>電子ジャーナル分析 | WCOOP</title>
-    <link rel="stylesheet" href="files/css/style.css">
-    <link rel="stylesheet" href="files/css/sales.css">
-    <link rel="stylesheet" href="files/css/sales-b.css">
+    <link rel="stylesheet" href="/sales-ej/files/css/style.css">
+    <link rel="stylesheet" href="/sales-ej/files/css/sales.css">
+    <link rel="stylesheet" href="/sales-ej/files/css/sales-b.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -18,11 +18,11 @@
                 <h2>&lt; サブレジ &gt;</h2>
 
                 <!-- メインレジに切り替え -->
-                <div class="main-regi-toggle">
-                    <a href="../a/" class="button" alt="メインレジに切り替え">
-                        <i class="fa-solid fa-arrow-left"></i> メインレジに切り替え
-                    </a>
-                </div>
+                <!-- <div class="main-regi-toggle"> -->
+                    <!-- <a href="/sales-ej/main/" class="button" alt="メインレジに切り替え"> -->
+                        <!-- <i class="fa-solid fa-arrow-left"></i> メインレジに切り替え -->
+                    <!-- </a> -->
+                <!-- </div> -->
 
                 <!-- アップロードフォーム -->
                 <div class="upload-form" id="upload-form-section">
@@ -49,9 +49,9 @@
                             <div class="date-field">
                                 <div class="date-field-title">開始日</div>
                                 <div class="date-selector">
-                                    <input type="number" id="start_year_input" min="2020" max="2100" placeholder="年">
-                                    <input type="number" id="start_month_input" min="1" max="12" placeholder="月">
-                                    <input type="number" id="start_day_input" min="1" max="31" placeholder="日">
+                                    <input type="numeric" id="start_year_input" min="2020" max="2100" placeholder="年">
+                                    <input type="numeric" id="start_month_input" min="1" max="12" placeholder="月">
+                                    <input type="numeric" id="start_day_input" min="1" max="31" placeholder="日">
                                 </div>
                             </div>
                         </div>
@@ -59,9 +59,9 @@
                             <div class="date-field">
                                 <div class="date-field-title">終了日</div>
                                 <div class="date-selector">
-                                    <input type="number" id="end_year_input" min="2020" max="2100" placeholder="年">
-                                    <input type="number" id="end_month_input" min="1" max="12" placeholder="月">
-                                    <input type="number" id="end_day_input" min="1" max="31" placeholder="日">
+                                    <input type="numeric" id="end_year_input" min="2020" max="2100" placeholder="年">
+                                    <input type="numeric" id="end_month_input" min="1" max="12" placeholder="月">
+                                    <input type="numeric" id="end_day_input" min="1" max="31" placeholder="日">
                                 </div>
                             </div>
                         </div>
@@ -89,9 +89,9 @@
                                         <div class="date-field">
                                             <div class="date-field-title">開始日</div>
                                             <div class="date-selector">
-                                                <input type="number" id="rerun_start_year_input" min="2020" max="2100" placeholder="年">
-                                                <input type="number" id="rerun_start_month_input" min="1" max="12" placeholder="月">
-                                                <input type="number" id="rerun_start_day_input" min="1" max="31" placeholder="日">
+                                                <input type="numeric" id="rerun_start_year_input" min="2020" max="2100" placeholder="年">
+                                                <input type="numeric" id="rerun_start_month_input" min="1" max="12" placeholder="月">
+                                                <input type="numeric" id="rerun_start_day_input" min="1" max="31" placeholder="日">
                                             </div>
                                         </div>
                                     </div>
@@ -99,9 +99,9 @@
                                         <div class="date-field">
                                             <div class="date-field-title">終了日</div>
                                             <div class="date-selector">
-                                                <input type="number" id="rerun_end_year_input" min="2020" max="2100" placeholder="年">
-                                                <input type="number" id="rerun_end_month_input" min="1" max="12" placeholder="月">
-                                                <input type="number" id="rerun_end_day_input" min="1" max="31" placeholder="日">
+                                                <input type="numeric" id="rerun_end_year_input" min="2020" max="2100" placeholder="年">
+                                                <input type="numeric" id="rerun_end_month_input" min="1" max="12" placeholder="月">
+                                                <input type="numeric" id="rerun_end_day_input" min="1" max="31" placeholder="日">
                                             </div>
                                         </div>
                                     </div>
@@ -129,16 +129,16 @@
                 </div>
 
                 <!-- リセットボタン -->
-                <div class="reset-button-container" id="reset-button-container">
-                    <button id="reset-button" class="reset-button" title="他のデータを確認">
-                        <i class="fa-solid fa-rotate"></i>
-                    </button>
-                </div>
+                <!-- <div class="reset-button-container" id="reset-button-container"> -->
+                    <!-- <button id="reset-button" class="reset-button" title="他のデータを確認"> -->
+                        <!-- <i class="fa-solid fa-rotate"></i> -->
+                    <!-- </button> -->
+                <!-- </div> -->
             </div>
         </div>
     </main>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/encoding-japanese/2.0.0/encoding.min.js"></script>
-    <script src="files/js/sales-147.js"></script>
+    <script src="/sales-ej/files/js/sales-147.js"></script>
 </body>
 </html>
