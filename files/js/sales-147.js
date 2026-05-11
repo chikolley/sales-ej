@@ -25,25 +25,24 @@ document.addEventListener('DOMContentLoaded', function () {
     const SKIP_KEYWORDS = ['両替', '*SDカード*', '日計', '電子ジャーナル'];
 
     // ---- DOM参照 ----
-    const dropZone             = document.getElementById('drop-zone');
-    const fileInput            = document.getElementById('journal_file');
-    const fileNameDisplay      = document.getElementById('file-name-display');
-    const dropZoneText         = document.getElementById('drop-zone-text');
-    const runButton            = document.getElementById('run-button');
-    const rerunButton          = document.getElementById('rerun-button');
-    const uploadFormSection    = document.getElementById('upload-form-section');
-    const resultSection        = document.getElementById('result-section');
-    const resultTitle          = document.getElementById('result-title');
-    const resultTables         = document.getElementById('result-tables');
-    const resetButton          = document.getElementById('reset-button');
-    const resetButtonContainer = document.getElementById('reset-button-container');
-    const errorMessage         = document.getElementById('error-message');
+    const dropZone                = document.getElementById('drop-zone');
+    const fileInput               = document.getElementById('journal_file');
+    const fileNameDisplay         = document.getElementById('file-name-display');
+    const dropZoneText            = document.getElementById('drop-zone-text');
+    const runButton               = document.getElementById('run-button');
+    const rerunButton             = document.getElementById('rerun-button');
+    const uploadFormSection       = document.getElementById('upload-form-section');
+    const resultSection           = document.getElementById('result-section');
+    const resultTitle             = document.getElementById('result-title');
+    const resultTables            = document.getElementById('result-tables');
+    const resetButton             = document.getElementById('reset-button');
+    const errorMessage            = document.getElementById('error-message');
     const journalDisplayContainer = document.getElementById('journal-display-container');
-    const journalContent       = document.getElementById('journal-content');
-    const journalPre           = document.getElementById('journal-pre');
-    const journalToggleButton  = document.getElementById('journal-toggle-button');
-    const rerunToggleButton    = document.getElementById('rerun-toggle-button');
-    const rerunDatePanel       = document.getElementById('rerun-date-panel');
+    const journalContent          = document.getElementById('journal-content');
+    const journalPre              = document.getElementById('journal-pre');
+    const journalToggleButton     = document.getElementById('journal-toggle-button');
+    const rerunToggleButton       = document.getElementById('rerun-toggle-button');
+    const rerunDatePanel          = document.getElementById('rerun-date-panel');
 
     // ---- キャッシュ操作 ----
     function setJournalCache(content, fileName) {
@@ -111,34 +110,34 @@ document.addEventListener('DOMContentLoaded', function () {
     setupDateMaxDays('end');
     setupDateMaxDays('rerun_start');
     setupDateMaxDays('rerun_end');
-    
+
     // ---- マウスホイールで日付入力を増減 ----
     function setupWheelInput(prefix) {
         const y = document.getElementById(prefix + '_year_input');
         const m = document.getElementById(prefix + '_month_input');
         const d = document.getElementById(prefix + '_day_input');
-    
+
         function addWheel(el, min, max) {
             el.addEventListener('wheel', function (e) {
-                e.preventDefault(); // ページスクロール無効
+                e.preventDefault();
                 const delta = e.deltaY < 0 ? 1 : -1;
                 let val = parseInt(el.value) || min;
                 val = Math.min(max, Math.max(min, val + delta));
                 el.value = val;
-                el.dispatchEvent(new Event('input')); // maxDays更新などに連動
+                el.dispatchEvent(new Event('input'));
             }, { passive: false });
         }
-    
+
         if (y) addWheel(y, 2020, 2100);
         if (m) addWheel(m, 1, 12);
         if (d) addWheel(d, 1, 31);
     }
-    
+
     setupWheelInput('start');
     setupWheelInput('end');
     setupWheelInput('rerun_start');
     setupWheelInput('rerun_end');
-    
+
     // ---- PHPロジック移植: 日付行パース ----
     function parseDateFromLine(line) {
         const m = line.match(/(\d{4})年\s*(\d{1,2})月\s*(\d{1,2})日/);
@@ -168,8 +167,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ---- PHPロジック移植: トランザクション単位のコミット ----
-    // サブレジ版はメインレジ版と異なり、日付ブロックをまとめてバッファに積んでから
-    // トランザクション全体で '解除機能により中止' / '取引後訂正' を判定する
     function commitTransaction(categoryStats, txLines, skipKeywords) {
         if (!txLines || txLines.length === 0) return;
 
@@ -203,18 +200,14 @@ document.addEventListener('DOMContentLoaded', function () {
             // カテゴリ付き訂正（負数）: "カテゴリ 内 訂-120"
             const corrMatch = line.match(/^([^\s*]+)\s+内\s*訂-([\d,]+)/);
             if (corrMatch) {
-                const category = corrMatch[1];
-                const price    = parseInt(corrMatch[2].replace(/,/g, ''), 10);
-                addToStats(categoryStats, category, price, -1);
+                addToStats(categoryStats, corrMatch[1], parseInt(corrMatch[2].replace(/,/g, ''), 10), -1);
                 continue;
             }
 
             // カテゴリ付き負数パターン: "カテゴリ 内 ...-120"（戻品など）
             const negMatch = line.match(/^([^\s*]+)\s+内.*-([\d,]+)/);
             if (negMatch) {
-                const category = negMatch[1];
-                const price    = parseInt(negMatch[2].replace(/,/g, ''), 10);
-                addToStats(categoryStats, category, price, -1);
+                addToStats(categoryStats, negMatch[1], parseInt(negMatch[2].replace(/,/g, ''), 10), -1);
                 continue;
             }
 
@@ -247,8 +240,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // 単独訂正行（カテゴリ不明）: "訂 -120"
             const corrFallback = line.match(/^訂\s*-([\d,]+)/);
             if (corrFallback) {
-                const price = parseInt(corrFallback[1].replace(/,/g, ''), 10);
-                addToStats(categoryStats, '訂', price, -1);
+                addToStats(categoryStats, '訂', parseInt(corrFallback[1].replace(/,/g, ''), 10), -1);
                 continue;
             }
 
@@ -278,10 +270,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const dateStr = parseDateFromLine(line);
             if (dateStr) {
-                // 前のトランザクションをコミット
                 commitTransaction(categoryStats, txLines, SKIP_KEYWORDS);
 
-                // 日付範囲チェック
                 if ((startDate && dateStr < startDate) ||
                     (endDate   && dateStr > endDate)) {
                     txDate  = null;
@@ -294,15 +284,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 continue;
             }
 
-            // 有効な日付範囲内のみバッファに追加
             if (txDate !== null) {
                 txLines.push(line);
             }
         }
 
-        // 最後のトランザクションをコミット
         commitTransaction(categoryStats, txLines, SKIP_KEYWORDS);
-
         return categoryStats;
     }
 
@@ -446,7 +433,6 @@ document.addEventListener('DOMContentLoaded', function () {
         // 表示切り替え
         uploadFormSection.classList.add('hidden');
         resultSection.classList.add('visible');
-        resetButtonContainer.classList.add('visible');
 
         rerunDatePanel.classList.remove('visible');
         rerunToggleButton.setAttribute('aria-expanded', 'false');
@@ -471,7 +457,7 @@ document.addEventListener('DOMContentLoaded', function () {
             runAnalysis(utf8, file.name, startDate, endDate);
         };
         reader.onerror = function () {
-            showError('ファイルの読み込みに失敗しました。');
+            alert('ファイルの読み込みに失敗しました。');
         };
         reader.readAsArrayBuffer(file);
     }
@@ -551,26 +537,19 @@ document.addEventListener('DOMContentLoaded', function () {
     // ---- 分析実行ボタン ----
     if (runButton) {
         runButton.addEventListener('click', function () {
-            hideError();
             const startDate = getDateString('start');
             const endDate   = getDateString('end');
-    
+
             if (startDate && endDate && endDate < startDate) {
-                alert('日付の入力が不正です');
+                alert('入力が不正です');
                 return;
             }
-    
-            const cache = getJournalCache();
-            if (fileInput.files.length === 0 && cache.content) {
-                runAnalysis(cache.content, cache.fileName, startDate, endDate);
-                return;
-            }
-    
+
             if (fileInput.files.length === 0) {
                 alert('ファイルが選択されていません。');
                 return;
             }
-    
+
             readAndAnalyze(fileInput.files[0], startDate, endDate);
         });
     }
@@ -585,17 +564,17 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             const startDate = getDateString('rerun_start');
             const endDate   = getDateString('rerun_end');
-    
-            // 終了日が開始日より前の場合はエラー表示して中断
+
             if (startDate && endDate && endDate < startDate) {
-                alert('日付の入力が不正です');
+                alert('入力が不正です');
                 return;
             }
+
             rerunToggleButton.setAttribute('aria-expanded', 'false');
             rerunDatePanel.classList.remove('visible');
-    
+
             runAnalysis(cache.content, cache.fileName, startDate, endDate);
-    
+
             if (startDate) setDateInputs('start', startDate);
             if (endDate)   setDateInputs('end', endDate);
         });
@@ -624,7 +603,6 @@ document.addEventListener('DOMContentLoaded', function () {
         resetButton.addEventListener('click', function () {
             uploadFormSection.classList.remove('hidden');
             resultSection.classList.remove('visible');
-            resetButtonContainer.classList.remove('visible');
 
             fileInput.value = '';
             fileNameDisplay.textContent = '';
@@ -649,5 +627,4 @@ document.addEventListener('DOMContentLoaded', function () {
     // ---- 初期状態 ----
     resultSection.classList.remove('visible');
     uploadFormSection.classList.remove('hidden');
-    resetButtonContainer.classList.remove('visible');
 });

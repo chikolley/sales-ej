@@ -346,6 +346,46 @@ a.button:hover {
 .reset-button i {
     margin: 0;
 }
+
+.result-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 32px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.result-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+    border: none;
+    transition: background-color 0.2s;
+    width: auto;
+    margin: 0;
+}
+.result-action-btn.reset {
+    background-color: #90CAF9;
+    color: white;
+}
+.result-action-btn.reset:hover {
+    background-color: #64B5F6;
+    text-decoration: none;
+}
+.result-action-btn.switch {
+    background-color: #A5D6A7;
+    color: #333 !important;
+}
+.result-action-btn.switch:hover {
+    background-color: #81C784;
+    text-decoration: none;
+}
+
 .desktop-only {
     display: block;
 }

@@ -26,34 +26,31 @@ document.addEventListener('DOMContentLoaded', function () {
     const SKIP_KEYWORDS = ['両替', '*SDカード*', '日計', '電子ジャーナル'];
 
     // ---- DOM参照 ----
-    const dropZone             = document.getElementById('drop-zone');
-    const fileInput            = document.getElementById('journal_file');
-    const fileNameDisplay      = document.getElementById('file-name-display');
-    const dropZoneText         = document.getElementById('drop-zone-text');
-    const runButton            = document.getElementById('run-button');
-    const rerunButton          = document.getElementById('rerun-button');
-    const uploadFormSection    = document.getElementById('upload-form-section');
-    const resultSection        = document.getElementById('result-section');
-    const resultTitle          = document.getElementById('result-title');
-    const resultTables         = document.getElementById('result-tables');
-    const resetButton          = document.getElementById('reset-button');
-    const resetButtonContainer = document.getElementById('reset-button-container');
-    const errorMessage         = document.getElementById('error-message');
+    const dropZone                = document.getElementById('drop-zone');
+    const fileInput               = document.getElementById('journal_file');
+    const fileNameDisplay         = document.getElementById('file-name-display');
+    const dropZoneText            = document.getElementById('drop-zone-text');
+    const runButton               = document.getElementById('run-button');
+    const rerunButton             = document.getElementById('rerun-button');
+    const uploadFormSection       = document.getElementById('upload-form-section');
+    const resultSection           = document.getElementById('result-section');
+    const resultTitle             = document.getElementById('result-title');
+    const resultTables            = document.getElementById('result-tables');
+    const resetButton             = document.getElementById('reset-button');
+    const errorMessage            = document.getElementById('error-message');
     const journalDisplayContainer = document.getElementById('journal-display-container');
-    const journalContent       = document.getElementById('journal-content');
-    const journalPre           = document.getElementById('journal-pre');
-    const journalToggleButton  = document.getElementById('journal-toggle-button');
-    const rerunToggleButton    = document.getElementById('rerun-toggle-button');
-    const rerunDatePanel       = document.getElementById('rerun-date-panel');
+    const journalContent          = document.getElementById('journal-content');
+    const journalPre              = document.getElementById('journal-pre');
+    const journalToggleButton     = document.getElementById('journal-toggle-button');
+    const rerunToggleButton       = document.getElementById('rerun-toggle-button');
+    const rerunDatePanel          = document.getElementById('rerun-date-panel');
 
     // ---- キャッシュ操作 ----
     function setJournalCache(content, fileName) {
         try {
             localStorage.setItem(CACHE_CONTENT_KEY, content || '');
             localStorage.setItem(CACHE_FILENAME_KEY, fileName || '');
-        } catch (e) {
-            // localStorage が使えない環境では無視
-        }
+        } catch (e) {}
     }
 
     function getJournalCache() {
@@ -99,8 +96,8 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!y || !m || !d) return;
 
         function updateMax() {
-            const year  = parseInt(y.value) || 2026;
-            const month = parseInt(m.value) || 1;
+            const year    = parseInt(y.value) || 2026;
+            const month   = parseInt(m.value) || 1;
             const maxDays = new Date(year, month, 0).getDate();
             d.max = maxDays;
             if (parseInt(d.value) > maxDays) d.value = maxDays;
@@ -120,28 +117,28 @@ document.addEventListener('DOMContentLoaded', function () {
         const y = document.getElementById(prefix + '_year_input');
         const m = document.getElementById(prefix + '_month_input');
         const d = document.getElementById(prefix + '_day_input');
-    
+
         function addWheel(el, min, max) {
             el.addEventListener('wheel', function (e) {
-                e.preventDefault(); // ページスクロール無効
+                e.preventDefault();
                 const delta = e.deltaY < 0 ? 1 : -1;
                 let val = parseInt(el.value) || min;
                 val = Math.min(max, Math.max(min, val + delta));
                 el.value = val;
-                el.dispatchEvent(new Event('input')); // maxDays更新などに連動
+                el.dispatchEvent(new Event('input'));
             }, { passive: false });
         }
-    
+
         if (y) addWheel(y, 2020, 2100);
         if (m) addWheel(m, 1, 12);
         if (d) addWheel(d, 1, 31);
     }
-    
+
     setupWheelInput('start');
     setupWheelInput('end');
     setupWheelInput('rerun_start');
     setupWheelInput('rerun_end');
-    
+
     // ---- PHPロジック移植: 日付行パース ----
     function parseDateFromLine(line) {
         const m = line.match(/(\d{4})年\s*(\d{1,2})月\s*(\d{1,2})日/);
@@ -153,9 +150,9 @@ document.addEventListener('DOMContentLoaded', function () {
     function filterJournalByDate(content, startDate, endDate) {
         if (!startDate && !endDate) return content;
 
-        const lines = content.split('\n');
+        const lines    = content.split('\n');
         const filtered = [];
-        let include = false;
+        let include    = false;
 
         for (const line of lines) {
             const dateStr = parseDateFromLine(line);
@@ -172,12 +169,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ---- PHPロジック移植: ジャーナル解析・集計 ----
     function parseJournalContent(content, startDate, endDate) {
-        const lines = content.split('\n');
-        const categoryStats = {}; // { category: { price: count } }
+        const lines         = content.split('\n');
+        const categoryStats = {};
 
-        let currentDate       = null;
-        let prevQuantityLine  = null; // { unitPrice, quantity }
-        let pendingRecord     = null; // { category, unitPrice, quantity }
+        let currentDate      = null;
+        let prevQuantityLine = null;
+        let pendingRecord    = null;
 
         function commitPending() {
             if (!pendingRecord) return;
@@ -312,7 +309,6 @@ document.addEventListener('DOMContentLoaded', function () {
     function decodeFileContent(arrayBuffer) {
         const uint8 = new Uint8Array(arrayBuffer);
 
-        // encoding.js が読み込まれていれば使用
         if (typeof Encoding !== 'undefined') {
             const detected = Encoding.detect(uint8);
             if (detected && detected !== 'UNICODE') {
@@ -321,7 +317,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        // フォールバック: TextDecoder (Shift-JIS を試みる)
         try {
             return new TextDecoder('shift_jis').decode(uint8);
         } catch (e) {
@@ -345,7 +340,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ---- 結果テーブル描画 ----
     function renderResults(analysisResult, startDate, endDate, filteredContent) {
-        // タイトル更新
         let titleText = '分析結果';
         if (startDate || endDate) {
             titleText += ' (' + (startDate || '最初') + ' 〜 ' + (endDate || '最後') + ')';
@@ -364,12 +358,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 return orderA - orderB;
             });
 
-            // ---- 明細テーブル ----
+            // 明細テーブル
             let detailRows = '';
             for (const category of sortedCategories) {
                 const priceBreakdown = analysisResult[category];
-                // 金額降順
-                const sortedPrices = Object.keys(priceBreakdown)
+                const sortedPrices   = Object.keys(priceBreakdown)
                     .map(Number)
                     .sort((a, b) => b - a);
 
@@ -387,7 +380,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             }
 
-            // ---- 集計テーブル ----
+            // 集計テーブル
             let totalQty    = 0;
             let totalAmount = 0;
             let summaryRows = '';
@@ -446,8 +439,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     </thead>
                     <tbody>${detailRows}</tbody>
                 </table>
-
-
             `;
         }
 
@@ -462,7 +453,6 @@ document.addEventListener('DOMContentLoaded', function () {
         // 表示切り替え
         uploadFormSection.classList.add('hidden');
         resultSection.classList.add('visible');
-        resetButtonContainer.classList.add('visible');
 
         // rerunパネルを閉じる
         rerunDatePanel.classList.remove('visible');
@@ -476,10 +466,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // ---- 分析実行 ----
     function runAnalysis(utf8Content, fileName, startDate, endDate) {
         setJournalCache(utf8Content, fileName || '');
-
         const filtered = filterJournalByDate(utf8Content, startDate, endDate);
         const result   = parseJournalContent(utf8Content, startDate, endDate);
-
         renderResults(result, startDate, endDate, filtered);
     }
 
@@ -492,7 +480,7 @@ document.addEventListener('DOMContentLoaded', function () {
             runAnalysis(utf8, file.name, startDate, endDate);
         };
         reader.onerror = function () {
-            showError('ファイルの読み込みに失敗しました。');
+            alert('ファイルの読み込みに失敗しました。');
         };
         reader.readAsArrayBuffer(file);
     }
@@ -542,7 +530,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 const f = files[0];
                 if (f.name.toLowerCase().endsWith('.txt')) {
                     clearJournalCache();
-                    // DataTransfer経由でfileInputに反映
                     try {
                         const dt = new DataTransfer();
                         dt.items.add(f);
@@ -573,26 +560,19 @@ document.addEventListener('DOMContentLoaded', function () {
     // ---- 分析実行ボタン ----
     if (runButton) {
         runButton.addEventListener('click', function () {
-            hideError();
             const startDate = getDateString('start');
             const endDate   = getDateString('end');
-    
+
             if (startDate && endDate && endDate < startDate) {
-                alert('日付の入力が不正です');
+                alert('入力が不正です');
                 return;
             }
-    
-            const cache = getJournalCache();
-            if (fileInput.files.length === 0 && cache.content) {
-                runAnalysis(cache.content, cache.fileName, startDate, endDate);
-                return;
-            }
-    
+
             if (fileInput.files.length === 0) {
                 alert('ファイルが選択されていません。');
                 return;
             }
-    
+
             readAndAnalyze(fileInput.files[0], startDate, endDate);
         });
     }
@@ -607,17 +587,17 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             const startDate = getDateString('rerun_start');
             const endDate   = getDateString('rerun_end');
-    
-            // 終了日が開始日より前の場合はエラー表示して中断
+
             if (startDate && endDate && endDate < startDate) {
-                alert('日付の入力が不正です');
+                alert('入力が不正です');
                 return;
             }
+
             rerunToggleButton.setAttribute('aria-expanded', 'false');
             rerunDatePanel.classList.remove('visible');
-    
+
             runAnalysis(cache.content, cache.fileName, startDate, endDate);
-    
+
             if (startDate) setDateInputs('start', startDate);
             if (endDate)   setDateInputs('end', endDate);
         });
@@ -642,47 +622,32 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ---- リセットボタン ----
-    if (rerunButton) {
-        rerunButton.addEventListener('click', function () {
-            const cache = getJournalCache();
-            if (!cache.content) {
-                alert('保持されたファイル情報がありません。再度ファイルをアップロードしてください。');
-                return;
-            }
-            const startDate = getDateString('rerun_start');
-            const endDate   = getDateString('rerun_end');
-    
-            // 終了日が開始日より前の場合はエラー表示して中断
-            if (startDate && endDate && endDate < startDate) {
-                showError('入力が不正です');
-                return;
-            }
-    
+    if (resetButton) {
+        resetButton.addEventListener('click', function () {
+            uploadFormSection.classList.remove('hidden');
+            resultSection.classList.remove('visible');
+
+            fileInput.value = '';
+            fileNameDisplay.textContent = '';
+            dropZoneText.classList.remove('hidden');
+            clearJournalCache();
             hideError();
-            rerunToggleButton.setAttribute('aria-expanded', 'false');
-            rerunDatePanel.classList.remove('visible');
-    
-            runAnalysis(cache.content, cache.fileName, startDate, endDate);
-    
-            if (startDate) setDateInputs('start', startDate);
-            if (endDate)   setDateInputs('end', endDate);
         });
     }
-    
-    // 当日の日付を開始・終了の初期値にセット
-    const today = new Date();
+
+    // ---- 当日の日付を初期値にセット ----
+    const today  = new Date();
     const todayY = today.getFullYear();
     const todayM = today.getMonth() + 1;
     const todayD = today.getDate();
-    
+
     for (const prefix of ['start', 'end', 'rerun_start', 'rerun_end']) {
         document.getElementById(prefix + '_year_input').value  = todayY;
         document.getElementById(prefix + '_month_input').value = todayM;
         document.getElementById(prefix + '_day_input').value   = todayD;
     }
-    // ---- ページ初期化: キャッシュが残っていれば result-section を表示しない ----
-    // (GitHub Pages版はサーバーサイドで結果を出さないので常にアップロードフォームから始まる)
+
+    // ---- 初期状態 ----
     resultSection.classList.remove('visible');
     uploadFormSection.classList.remove('hidden');
-    resetButtonContainer.classList.remove('visible');
 });
