@@ -1,4 +1,4 @@
-// Last updated: 2026-05-11 11:08:32
+// Last updated: 2026-05-11 11:18:44
 // ======================================================
 // sales.js - EJジャーナル分析 共通UI・ページ操作
 //
@@ -392,8 +392,12 @@ document.addEventListener('DOMContentLoaded', function () {
         uploadFormSection.classList.add('hidden');
         resultSection.classList.add('visible');
         if (resetButtonFixed) resetButtonFixed.classList.add('visible');
-        rerunDatePanel.classList.remove('visible');
-        rerunToggleButton.setAttribute('aria-expanded', 'false');
+
+        // データがある場合のみrerunパネルを閉じる
+        if (analysisResult && Object.keys(analysisResult).length > 0) {
+            rerunDatePanel.classList.remove('visible');
+            rerunToggleButton.setAttribute('aria-expanded', 'false');
+        }
         journalContent.classList.remove('visible');
         journalToggleButton.setAttribute('aria-expanded', 'false');
 
