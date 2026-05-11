@@ -554,18 +554,23 @@ document.addEventListener('DOMContentLoaded', function () {
             hideError();
             const startDate = getDateString('start');
             const endDate   = getDateString('end');
-
+    
+            if (startDate && endDate && endDate < startDate) {
+                alert('日付の入力が不正です');
+                return;
+            }
+    
             const cache = getJournalCache();
             if (fileInput.files.length === 0 && cache.content) {
                 runAnalysis(cache.content, cache.fileName, startDate, endDate);
                 return;
             }
-
+    
             if (fileInput.files.length === 0) {
-                showError('ファイルが選択されていません。');
+                alert('ファイルが選択されていません。');
                 return;
             }
-
+    
             readAndAnalyze(fileInput.files[0], startDate, endDate);
         });
     }
@@ -583,7 +588,7 @@ document.addEventListener('DOMContentLoaded', function () {
     
             // 終了日が開始日より前の場合はエラー表示して中断
             if (startDate && endDate && endDate < startDate) {
-                alert('入力が不正です');
+                alert('日付の入力が不正です');
                 return;
             }
             rerunToggleButton.setAttribute('aria-expanded', 'false');
