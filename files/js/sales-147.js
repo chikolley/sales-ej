@@ -1,13 +1,10 @@
 // ======================================================
 // sales-147.js - EJジャーナル分析 サブレジ固有設定
 // 共通UI処理は sales.js に記述
-// メインレジ版との差異:
-//   - トランザクションバッファ方式
-//   - '取引後訂正' を含むトランザクションは sign=-1
-//   - カテゴリ付き負数パターンを先に判定
+// /common/ では window.SalesPageSub として登録し自動判定に使用
 // ======================================================
 
-window.SalesPage = {
+window.SalesPageSub = {
 
     CACHE_CONTENT_KEY:  'wcoop.sales.b.journal.content',
     CACHE_FILENAME_KEY: 'wcoop.sales.b.journal.filename',
@@ -21,7 +18,7 @@ window.SalesPage = {
         '飲料':   'drink',
     },
 
-    CATEGORY_ORDER: null, // アルファベット順
+    CATEGORY_ORDER: null,
 
     SKIP_KEYWORDS: ['両替', '*SDカード*', '日計', '電子ジャーナル'],
 
@@ -61,7 +58,6 @@ window.SalesPage = {
             for (let rawLine of txLines) {
                 const line = rawLine.trim();
 
-                // 数量行
                 const qtyMatch = line.match(/^(\d+[,]?\d*)x\s*(\d+)/);
                 if (qtyMatch) {
                     prevQuantityLine = {
@@ -71,21 +67,18 @@ window.SalesPage = {
                     continue;
                 }
 
-                // カテゴリ付き訂正（負数）: "カテゴリ 内 訂-120"
                 const corrMatch = line.match(/^([^\s*]+)\s+内\s*訂-([\d,]+)/);
                 if (corrMatch) {
                     addToStats(corrMatch[1], parseInt(corrMatch[2].replace(/,/g, ''), 10), -1);
                     continue;
                 }
 
-                // カテゴリ付き負数パターン: "カテゴリ 内 ...-120"（戻品など）
                 const negMatch = line.match(/^([^\s*]+)\s+内.*-([\d,]+)/);
                 if (negMatch) {
                     addToStats(negMatch[1], parseInt(negMatch[2].replace(/,/g, ''), 10), -1);
                     continue;
                 }
 
-                // 通常カテゴリ行（正数）
                 const normalMatch = line.match(/^([^\s*]+)\s+内\s*[\\¥]([\d,]+)/);
                 if (normalMatch) {
                     const category = normalMatch[1];
@@ -111,7 +104,6 @@ window.SalesPage = {
                     continue;
                 }
 
-                // 単独訂正行（カテゴリ不明）: "訂 -120"
                 const corrFallback = line.match(/^訂\s*-([\d,]+)/);
                 if (corrFallback) {
                     addToStats('訂', parseInt(corrFallback[1].replace(/,/g, ''), 10), -1);
@@ -152,3 +144,6 @@ window.SalesPage = {
         return categoryStats;
     },
 };
+
+// /sub/ ページ向け: window.SalesPage としても登録
+window.SalesPage = window.SalesPageSub;

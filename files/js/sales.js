@@ -1,27 +1,16 @@
 // ======================================================
 // sales.js - EJジャーナル分析 共通UI・ページ操作
-// 各ページ側で window.SalesPage を定義してから読み込む
 //
-// 各ページ側で定義が必要なもの（sales-207.js / sales-147.js）:
-//   window.SalesPage = {
-//       CACHE_CONTENT_KEY:  string,
-//       CACHE_FILENAME_KEY: string,
-//       CATEGORY_CLASS_MAP: object,
-//       CATEGORY_ORDER:     string[] | null,  // nullの場合はアルファベット順
-//       SKIP_KEYWORDS:      string[],
-//       parseJournalContent: function(content, startDate, endDate) -> categoryStats,
-//   };
+// /main/, /sub/ ページ:
+//   各ページ側で window.SalesPage を定義してから読み込む
+//
+// /common/ ページ:
+//   window.SalesPageMain と window.SalesPageSub を両方定義してから読み込む
+//   ファイル内容の 責任\d+ の有無でメイン/サブを自動判定し
+//   window.SalesPage に動的にセットする
 // ======================================================
 
 document.addEventListener('DOMContentLoaded', function () {
-
-    const {
-        CACHE_CONTENT_KEY,
-        CACHE_FILENAME_KEY,
-        CATEGORY_CLASS_MAP,
-        CATEGORY_ORDER,
-        parseJournalContent,
-    } = window.SalesPage;
 
     // ---- DOM参照 ----
     const dropZone                = document.getElementById('drop-zone');
@@ -43,19 +32,37 @@ document.addEventListener('DOMContentLoaded', function () {
     const rerunToggleButton       = document.getElementById('rerun-toggle-button');
     const rerunDatePanel          = document.getElementById('rerun-date-panel');
 
+    // ---- レジ自動判定 ----
+    // window.SalesPageMain / SalesPageSub が両方存在する場合（/common/）のみ動作
+    // 片方しかない場合（/main/, /sub/）は各ページ側で設定済みの window.SalesPage をそのまま使う
+    function detectAndSetSalesPage(utf8Content) {
+        if (!window.SalesPageMain || !window.SalesPageSub) return;
+        window.SalesPage = /責任\d+/.test(utf8Content)
+            ? window.SalesPageMain
+            : window.SalesPageSub;
+    }
+
+    // ---- SalesPage プロパティへのアクセサ ----
+    // window.SalesPage は readAndAnalyze 後に切り替わる可能性があるため
+    // 毎回 window.SalesPage から参照する
+    function getCacheContentKey()  { return window.SalesPage.CACHE_CONTENT_KEY; }
+    function getCacheFilenameKey() { return window.SalesPage.CACHE_FILENAME_KEY; }
+    function getCategoryClassMap() { return window.SalesPage.CATEGORY_CLASS_MAP; }
+    function getCategoryOrder()    { return window.SalesPage.CATEGORY_ORDER; }
+
     // ---- キャッシュ操作 ----
     function setJournalCache(content, fileName) {
         try {
-            localStorage.setItem(CACHE_CONTENT_KEY, content || '');
-            localStorage.setItem(CACHE_FILENAME_KEY, fileName || '');
+            localStorage.setItem(getCacheContentKey(), content || '');
+            localStorage.setItem(getCacheFilenameKey(), fileName || '');
         } catch (e) {}
     }
 
     function getJournalCache() {
         try {
             return {
-                content:  localStorage.getItem(CACHE_CONTENT_KEY)  || '',
-                fileName: localStorage.getItem(CACHE_FILENAME_KEY) || '',
+                content:  localStorage.getItem(getCacheContentKey())  || '',
+                fileName: localStorage.getItem(getCacheFilenameKey()) || '',
             };
         } catch (e) {
             return { content: '', fileName: '' };
@@ -64,8 +71,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function clearJournalCache() {
         try {
-            localStorage.removeItem(CACHE_CONTENT_KEY);
-            localStorage.removeItem(CACHE_FILENAME_KEY);
+            // 両方のキャッシュキーをクリア（/common/ でのキー切り替えに対応）
+            if (window.SalesPageMain) {
+                localStorage.removeItem(window.SalesPageMain.CACHE_CONTENT_KEY);
+                localStorage.removeItem(window.SalesPageMain.CACHE_FILENAME_KEY);
+            }
+            if (window.SalesPageSub) {
+                localStorage.removeItem(window.SalesPageSub.CACHE_CONTENT_KEY);
+                localStorage.removeItem(window.SalesPageSub.CACHE_FILENAME_KEY);
+            }
+            localStorage.removeItem(getCacheContentKey());
+            localStorage.removeItem(getCacheFilenameKey());
         } catch (e) {}
     }
 
@@ -200,6 +216,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ---- 結果テーブル描画 ----
     function renderResults(analysisResult, startDate, endDate, filteredContent) {
+        const CATEGORY_CLASS_MAP = getCategoryClassMap();
+        const CATEGORY_ORDER     = getCategoryOrder();
+
         let titleText = '分析結果';
         if (startDate || endDate) {
             titleText += ' (' + (startDate || '最初') + ' 〜 ' + (endDate || '最後') + ')';
@@ -209,7 +228,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!analysisResult || Object.keys(analysisResult).length === 0) {
             resultTables.innerHTML = '<p>指定された期間のデータがありません。</p>';
         } else {
-            // カテゴリソート: CATEGORY_ORDERがあれば指定順、なければアルファベット順
             const sortedCategories = Object.keys(analysisResult).sort((a, b) => {
                 if (!CATEGORY_ORDER) return a.localeCompare(b);
                 const ia = CATEGORY_ORDER.indexOf(a);
@@ -315,11 +333,8 @@ document.addEventListener('DOMContentLoaded', function () {
         uploadFormSection.classList.add('hidden');
         resultSection.classList.add('visible');
 
-        // rerunパネルを閉じる
         rerunDatePanel.classList.remove('visible');
         rerunToggleButton.setAttribute('aria-expanded', 'false');
-
-        // journalトグルをリセット
         journalContent.classList.remove('visible');
         journalToggleButton.setAttribute('aria-expanded', 'false');
     }
@@ -337,6 +352,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const reader = new FileReader();
         reader.onload = function (e) {
             const utf8 = decodeFileContent(e.target.result);
+            detectAndSetSalesPage(utf8); // /common/ のみ有効、他は何もしない
             clearJournalCache();
             runAnalysis(utf8, file.name, startDate, endDate);
         };

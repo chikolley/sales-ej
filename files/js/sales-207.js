@@ -1,9 +1,10 @@
 // ======================================================
 // sales-207.js - EJジャーナル分析 メインレジ固有設定
 // 共通UI処理は sales.js に記述
+// /common/ では window.SalesPageMain として登録し自動判定に使用
 // ======================================================
 
-window.SalesPage = {
+window.SalesPageMain = {
 
     CACHE_CONTENT_KEY:  'wcoop.sales.a.journal.content',
     CACHE_FILENAME_KEY: 'wcoop.sales.a.journal.filename',
@@ -51,7 +52,6 @@ window.SalesPage = {
         for (let rawLine of lines) {
             const line = rawLine.trim();
 
-            // 解除機能により中止 → 直前のレコードを破棄
             if (line.includes('解除機能により中止')) {
                 pendingRecord    = null;
                 prevQuantityLine = null;
@@ -59,7 +59,6 @@ window.SalesPage = {
                 continue;
             }
 
-            // 日付行
             const dateStr = parseDateFromLine(line);
             if (dateStr) {
                 commitPending();
@@ -72,14 +71,12 @@ window.SalesPage = {
                 continue;
             }
 
-            // 有効な日付範囲外
             if (!currentDate) {
                 commitPending();
                 prevQuantityLine = null;
                 continue;
             }
 
-            // スキップキーワード
             if (SKIP_KEYWORDS.some(kw => line.includes(kw))) {
                 commitPending();
                 currentDate      = null;
@@ -87,7 +84,6 @@ window.SalesPage = {
                 continue;
             }
 
-            // 数量行: "11x 3" / "3,700x 2"
             const qtyMatch = line.match(/^(\d+[,]?\d*)x\s*(\d+)/);
             if (qtyMatch) {
                 commitPending();
@@ -98,7 +94,6 @@ window.SalesPage = {
                 continue;
             }
 
-            // カテゴリ行（通常）: "グッズ    内 \160" / "グッズ    内 ¥160"
             const normalMatch = line.match(/^([^\s*]+)\s+内\s*[\\¥]([\d,]+)/);
             if (normalMatch) {
                 commitPending();
@@ -119,7 +114,6 @@ window.SalesPage = {
                 continue;
             }
 
-            // カテゴリ行（戻品）: "飲料    内戻-500" / "文具    内 戻-334"
             const returnMatch = line.match(/^([^\s*]+)\s+内\s*戻-([\d,]+)/);
             if (returnMatch) {
                 commitPending();
@@ -132,7 +126,6 @@ window.SalesPage = {
                 continue;
             }
 
-            // 訂正行（カテゴリ付き）: "XXX 内 訂-120"
             const corrMatch = line.match(/^([^\s*]+)\s+内\s*訂-([\d,]+)/);
             if (corrMatch) {
                 commitPending();
@@ -145,7 +138,6 @@ window.SalesPage = {
                 continue;
             }
 
-            // 訂正行（カテゴリなし）: "訂 -120"
             const corrFallback = line.match(/^訂\s*-([\d,]+)/);
             if (corrFallback) {
                 commitPending();
@@ -158,7 +150,6 @@ window.SalesPage = {
                 continue;
             }
 
-            // それ以外: 数量行でなければ prevQuantityLine をリセット
             if (!line.match(/^(\d+[,]?\d*)x\s*(\d+)/)) {
                 prevQuantityLine = null;
             }
@@ -168,3 +159,6 @@ window.SalesPage = {
         return categoryStats;
     },
 };
+
+// /main/ ページ向け: window.SalesPage としても登録
+window.SalesPage = window.SalesPageMain;
