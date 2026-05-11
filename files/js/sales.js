@@ -323,8 +323,8 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             resultTables.innerHTML = `
-                <h3 style="margin-top:40px;">集計結果</h3>
-                <table>
+                <h3 class="summary-heading" style="margin-top:40px;">集計結果</h3>
+                <table class="summaryTable">
                     <thead>
                         <tr>
                             <th>カテゴリ</th>
@@ -335,8 +335,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     <tbody>${summaryRows}</tbody>
                 </table>
 
-                <h3 style="margin-top:40px;">詳細</h3>
-                <table>
+                <h3 class="detail-heading" style="margin-top:40px;">詳細</h3>
+                <table class="detailTable">
                     <thead>
                         <tr>
                             <th>カテゴリ</th>
