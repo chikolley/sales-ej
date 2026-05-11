@@ -328,7 +328,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function runAnalysis(utf8Content, fileName, startDate, endDate) {
         setJournalCache(utf8Content, fileName || '');
         const filtered = filterJournalByDate(utf8Content, startDate, endDate);
-        const result   = parseJournalContent(utf8Content, startDate, endDate);
+        const result   = window.SalesPage.parseJournalContent(utf8Content, startDate, endDate);
         renderResults(result, startDate, endDate, filtered);
     }
 
