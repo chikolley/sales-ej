@@ -316,6 +316,14 @@ a.button:hover {
     display: block;
 }
 
+.reg-indicator {
+    text-align: center;
+    color: #888;
+    font-size: 14px;
+    margin-top: -16px;
+    margin-bottom: 8px;
+}
+
 .journal-content.visible {
     padding: 20px;
 }
