@@ -120,6 +120,27 @@
                         </div>
                     </div>
 
+                    <!-- 出力パネル -->
+                    <div class="export-panel">
+                        <div class="export-panel-row">
+                            <div class="export-format-group">
+                                <span class="export-label">形式</span>
+                                <label class="export-radio"><input type="radio" name="export-format" value="txt" checked> TXT</label>
+                                <label class="export-radio"><input type="radio" name="export-format" value="pdf"> PDF</label>
+                                <label class="export-radio"><input type="radio" name="export-format" value="xlsx"> Excel</label>
+                            </div>
+                            <div class="export-scope-group">
+                                <span class="export-label">内容</span>
+                                <label class="export-check"><input type="checkbox" id="export-summary" checked disabled> サマリー</label>
+                                <label class="export-check"><input type="checkbox" id="export-detail" checked> 詳細</label>
+                                <label class="export-check" id="export-journal-label"><input type="checkbox" id="export-journal" disabled> ジャーナル</label>
+                            </div>
+                        </div>
+                        <button id="export-button" class="export-button">
+                            <i class="fa-solid fa-download"></i> ダウンロード
+                        </button>
+                    </div>
+
                     <div class="result-actions">
                         <button id="reset-button" class="result-action-btn reset">
                             <i class="fa-solid fa-rotate"></i> 別のファイルで計算
@@ -161,9 +182,11 @@
     </main>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/encoding-japanese/2.0.0/encoding.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <!-- 両方のパーサを読み込む。sales.jsがファイル内容で自動判定してSalesPageを切り替える -->
     <script src="/sales-ej/files/js/sales-207.js"></script>
     <script src="/sales-ej/files/js/sales-147.js"></script>
     <script src="/sales-ej/files/js/sales.js"></script>
+    <script src="/sales-ej/files/js/export.js"></script>
 </body>
 </html>

@@ -32,6 +32,16 @@ document.addEventListener('DOMContentLoaded', function () {
     const rerunToggleButton       = document.getElementById('rerun-toggle-button');
     const rerunDatePanel          = document.getElementById('rerun-date-panel');
 
+    // ---- 出力用データ保持 ----
+    // export.js から参照できるようにwindowに公開
+    window.SalesExportData = {
+        analysisResult:  null,
+        filteredContent: null,
+        startDate:       null,
+        endDate:         null,
+        regLabel:        null,
+    };
+
     // ---- レジ自動判定 ----
     // window.SalesPageMain / SalesPageSub が両方存在する場合（/common/）のみ動作
     // 片方しかない場合（/main/, /sub/）は各ページ側で設定済みの window.SalesPage をそのまま使う
@@ -236,6 +246,13 @@ document.addEventListener('DOMContentLoaded', function () {
             regIndicator.textContent = regLabel || '';
             regIndicator.style.display = regLabel ? '' : 'none';
         }
+
+        // 出力用にデータを保持
+        window.SalesExportData.analysisResult  = analysisResult;
+        window.SalesExportData.filteredContent = filteredContent;
+        window.SalesExportData.startDate       = startDate;
+        window.SalesExportData.endDate         = endDate;
+        window.SalesExportData.regLabel        = regLabel;
 
         if (!analysisResult || Object.keys(analysisResult).length === 0) {
             resultTables.innerHTML = '<p>指定された期間のデータがありません。</p>';

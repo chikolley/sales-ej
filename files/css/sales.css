@@ -514,3 +514,109 @@ a.button:hover {
         font-weight: 500;
     }
 }
+
+/* ---- 出力パネル ---- */
+.export-panel {
+    margin: 28px 0 16px;
+    padding: 16px 18px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fafafa;
+}
+.export-panel-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 14px;
+    align-items: flex-start;
+}
+.export-format-group,
+.export-scope-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.export-label {
+    font-weight: bold;
+    font-size: 14px;
+    color: #555;
+    white-space: nowrap;
+}
+.export-radio,
+.export-check {
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+}
+.export-check input:disabled + span,
+.export-check input:disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+.export-button {
+    background-color: #78C9A0;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 24px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.2s;
+    width: auto;
+    margin: 0;
+}
+.export-button:hover {
+    background-color: #5BB88A;
+}
+#export-journal-label {
+    opacity: 0.45;
+    cursor: default;
+}
+#export-journal-label.enabled {
+    opacity: 1;
+    cursor: pointer;
+}
+
+/* ---- 印刷用CSS (PDF出力) ---- */
+@media print {
+    body {
+        background: white;
+        padding: 0;
+    }
+    .upload-form,
+    .rerun-date-form,
+    .journal-display-container,
+    .result-actions,
+    .export-panel,
+    .reset-button-fixed,
+    .help-button,
+    .help-modal,
+    header {
+        display: none !important;
+    }
+    .container {
+        box-shadow: none;
+        border-radius: 0;
+        min-height: unset;
+        padding: 16px;
+    }
+    .result-section {
+        display: block !important;
+    }
+    table {
+        page-break-inside: auto;
+    }
+    tr {
+        page-break-inside: avoid;
+    }
+    .print-hide {
+        display: none !important;
+    }
+}
