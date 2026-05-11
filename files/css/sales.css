@@ -594,7 +594,7 @@ a.button:hover {
         background: white;
         padding: 0;
         margin: 0;
-        font-size: 11pt;
+        font-size: 13pt;
         color: #000;
     }
     .upload-form,
@@ -627,27 +627,27 @@ a.button:hover {
 
     /* タイトル・ヘッダー */
     h1 {
-        font-size: 16pt;
+        font-size: 20pt;
         margin-bottom: 4px;
         border-bottom: 2px solid #333;
-        padding-bottom: 6px;
+        padding-bottom: 8px;
     }
     #result-title {
-        font-size: 13pt;
-        margin-top: 16px;
+        font-size: 16pt;
+        margin-top: 20px;
         margin-bottom: 2px;
     }
     #reg-indicator {
-        font-size: 10pt;
+        font-size: 12pt;
         color: #555 !important;
-        margin-bottom: 12px;
+        margin-bottom: 16px;
     }
     h3 {
-        font-size: 11pt;
-        margin-top: 20px;
-        margin-bottom: 6px;
-        border-left: 3px solid #555;
-        padding-left: 8px;
+        font-size: 14pt;
+        margin-top: 24px;
+        margin-bottom: 8px;
+        border-left: 4px solid #555;
+        padding-left: 10px;
     }
 
     /* テーブル */
@@ -655,7 +655,7 @@ a.button:hover {
         width: 100%;
         border-collapse: collapse;
         page-break-inside: auto;
-        font-size: 10pt;
+        font-size: 12pt;
     }
     thead {
         display: table-header-group;
@@ -666,14 +666,14 @@ a.button:hover {
     th {
         background-color: #e8e8e8 !important;
         border: 1px solid #999;
-        padding: 5px 8px;
+        padding: 7px 10px;
         text-align: left;
-        font-size: 10pt;
+        font-size: 12pt;
     }
     td {
         border: 1px solid #bbb;
-        padding: 4px 8px;
-        font-size: 10pt;
+        padding: 6px 10px;
+        font-size: 12pt;
     }
     /* カテゴリ色 */
     .category-goods       { background-color: #ffe4e1 !important; }
