@@ -394,9 +394,22 @@ document.addEventListener('DOMContentLoaded', function () {
                 <td class="amount">${numFmt(totalQty)}</td>
                 <td class="amount">${numFmt(totalAmount)}</td>
             </tr>`;
-
+            
             resultTables.innerHTML = `
-                <table>
+                <h3 style="margin-top:40px;">集計結果</h3>
+                <table class="summaryTable">
+                    <thead>
+                        <tr>
+                            <th>カテゴリ</th>
+                            <th class="amount">販売数合計</th>
+                            <th class="amount">販売額合計</th>
+                        </tr>
+                    </thead>
+                    <tbody>${summaryRows}</tbody>
+                </table>
+
+                <h3 style="margin-top:40px;">詳細</h3>
+                <table class="detailTable">
                     <thead>
                         <tr>
                             <th>カテゴリ</th>
@@ -407,21 +420,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     </thead>
                     <tbody>${detailRows}</tbody>
                 </table>
-
-                <h3 style="margin-top:40px;">集計結果</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>カテゴリ</th>
-                            <th class="amount">販売数合計</th>
-                            <th class="amount">販売額合計</th>
-                        </tr>
-                    </thead>
-                    <tbody>${summaryRows}</tbody>
-                </table>
             `;
         }
-
         // ジャーナル表示
         if (filteredContent) {
             journalPre.textContent = filteredContent;
