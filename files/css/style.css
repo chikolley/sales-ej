@@ -11,6 +11,7 @@ body {
     padding: var(--page-pad);
     text-align: center;  /* テキストだけ中央（レイアウトは影響しない） */
     color: #333;
+    overflow-y: scroll; /* 常にスクロールバーを表示してレイアウトの安定化 */
 }
 
 header {
