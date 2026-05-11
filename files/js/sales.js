@@ -1,5 +1,4 @@
-// Last updated: 2026-05-11 10:56:45
-
+// Last updated: 2026-05-11 11:08:32
 // ======================================================
 // sales.js - EJジャーナル分析 共通UI・ページ操作
 //
@@ -404,7 +403,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const rerunSel = document.getElementById('rerun-end-date-selector');
         if (rerunCb)  rerunCb.checked = endExplicit;
         if (rerunSel) rerunSel.classList.toggle('disabled', !endExplicit);
-        if (endExplicit && endDate) setDateInputs('rerun_end', endDate);
+        setDateInputs('rerun_end', endExplicit ? endDate : startDate);
     }
 
     // ---- 分析実行 ----
@@ -515,6 +514,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             document.activeElement.blur();
+            if (!endExplicit) setDateInputs('end', startDate);
             readAndAnalyze(fileInput.files[0], startDate, endDate, endExplicit);
         });
     }
@@ -543,6 +543,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (startDate) setDateInputs('start', startDate);
             if (endExplicit && endDate) setDateInputs('end', endDate);
+            if (!endExplicit) setDateInputs('rerun_end', startDate);
         });
     }
 
