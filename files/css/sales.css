@@ -350,7 +350,13 @@ a.button:hover {
 .reset-button i {
     margin: 0;
 }
-
+.reg-indicator {
+    text-align: center;
+    color: #888;
+    font-size: 14px;
+    margin-top: -16px;
+    margin-bottom: 8px;
+}
 .result-actions {
     display: flex;
     gap: 12px;
