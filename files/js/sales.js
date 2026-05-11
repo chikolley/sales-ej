@@ -95,8 +95,38 @@ document.addEventListener('DOMContentLoaded', function () {
         } catch (e) {}
     }
 
+    // ---- 終了日オプション制御 ----
+    function setupEndDateToggle(checkboxId, selectorId) {
+        const checkbox = document.getElementById(checkboxId);
+        const selector = document.getElementById(selectorId);
+        if (!checkbox || !selector) return;
+
+        function update() {
+            if (checkbox.checked) {
+                selector.classList.remove('disabled');
+            } else {
+                selector.classList.add('disabled');
+            }
+        }
+
+        checkbox.addEventListener('change', update);
+        update(); // 初期状態を適用
+    }
+
+    setupEndDateToggle('end-date-enable', 'end-date-selector');
+    setupEndDateToggle('rerun-end-date-enable', 'rerun-end-date-selector');
+
     // ---- 日付ユーティリティ ----
     function getDateString(prefix) {
+        // 終了日の場合はチェックボックスが無効ならnullを返す
+        if (prefix === 'end') {
+            const cb = document.getElementById('end-date-enable');
+            if (cb && !cb.checked) return null;
+        }
+        if (prefix === 'rerun_end') {
+            const cb = document.getElementById('rerun-end-date-enable');
+            if (cb && !cb.checked) return null;
+        }
         const y = document.getElementById(prefix + '_year_input').value;
         const m = document.getElementById(prefix + '_month_input').value;
         const d = document.getElementById(prefix + '_day_input').value;
@@ -367,7 +397,18 @@ document.addEventListener('DOMContentLoaded', function () {
         journalContent.classList.remove('visible');
         journalToggleButton.setAttribute('aria-expanded', 'false');
         if (startDate) setDateInputs('rerun_start', startDate);
-        if (endDate)   setDateInputs('rerun_end', endDate);
+        if (endDate) {
+            const cb = document.getElementById('rerun-end-date-enable');
+            if (cb) cb.checked = true;
+            const sel = document.getElementById('rerun-end-date-selector');
+            if (sel) sel.classList.remove('disabled');
+            setDateInputs('rerun_end', endDate);
+        } else {
+            const cb = document.getElementById('rerun-end-date-enable');
+            if (cb) cb.checked = false;
+            const sel = document.getElementById('rerun-end-date-selector');
+            if (sel) sel.classList.add('disabled');
+        }
     }
 
     // ---- 分析実行 ----
@@ -476,8 +517,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            document.activeElement.blur();
-            
             readAndAnalyze(fileInput.files[0], startDate, endDate);
         });
     }
