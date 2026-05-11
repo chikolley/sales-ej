@@ -222,7 +222,7 @@ a.button:hover {
     gap: 8px;
     align-items: center;
 }
-.date-selector input[type="number"] {
+.date-selector input[type="text"] {
     width: 80px;
     padding: 8px;
     text-align: center;
@@ -231,12 +231,12 @@ a.button:hover {
 
     /* -moz-appearance: textfield; */
 }
-.date-selector input[type="number"]::-webkit-inner-spin-button,
-.date-selector input[type="number"]::-webkit-outer-spin-button {
+.date-selector input[type="text"]::-webkit-inner-spin-button,
+.date-selector input[type="text"]::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
-.date-selector input[type="number"]::placeholder {
+.date-selector input[type="text"]::placeholder {
     color: #999;
     font-size: 14px;
 }
