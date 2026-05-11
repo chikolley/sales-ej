@@ -1,4 +1,8 @@
 /* Shared styles for WCOOP sales pages (a and b) */
+.regi-switch {
+    margin-bottom: 20px;
+}
+
 .journal-display-container {
     margin: 30px 0;
 }
