@@ -586,9 +586,16 @@ a.button:hover {
 
 /* ---- 印刷用CSS (PDF出力) ---- */
 @media print {
+    * {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
     body {
         background: white;
         padding: 0;
+        margin: 0;
+        font-size: 11pt;
+        color: #000;
     }
     .upload-form,
     .rerun-date-form,
@@ -601,21 +608,89 @@ a.button:hover {
     header {
         display: none !important;
     }
+    .main-content {
+        padding: 0;
+    }
     .container {
         box-shadow: none;
         border-radius: 0;
         min-height: unset;
-        padding: 16px;
+        padding: 20px 28px;
+        display: block;
+    }
+    .col {
+        width: 100%;
     }
     .result-section {
         display: block !important;
     }
+
+    /* タイトル・ヘッダー */
+    h1 {
+        font-size: 16pt;
+        margin-bottom: 4px;
+        border-bottom: 2px solid #333;
+        padding-bottom: 6px;
+    }
+    #result-title {
+        font-size: 13pt;
+        margin-top: 16px;
+        margin-bottom: 2px;
+    }
+    #reg-indicator {
+        font-size: 10pt;
+        color: #555 !important;
+        margin-bottom: 12px;
+    }
+    h3 {
+        font-size: 11pt;
+        margin-top: 20px;
+        margin-bottom: 6px;
+        border-left: 3px solid #555;
+        padding-left: 8px;
+    }
+
+    /* テーブル */
     table {
+        width: 100%;
+        border-collapse: collapse;
         page-break-inside: auto;
+        font-size: 10pt;
+    }
+    thead {
+        display: table-header-group;
     }
     tr {
         page-break-inside: avoid;
     }
+    th {
+        background-color: #e8e8e8 !important;
+        border: 1px solid #999;
+        padding: 5px 8px;
+        text-align: left;
+        font-size: 10pt;
+    }
+    td {
+        border: 1px solid #bbb;
+        padding: 4px 8px;
+        font-size: 10pt;
+    }
+    /* カテゴリ色 */
+    .category-goods       { background-color: #ffe4e1 !important; }
+    .category-bread       { background-color: #fffacd !important; }
+    .category-iogi        { background-color: #e0ffff !important; }
+    .category-stationery  { background-color: #f0e6ff !important; }
+    .category-exam        { background-color: #d0f0c0 !important; }
+    .category-drink       { background-color: #ffe4b5 !important; }
+    .category-text        { background-color: #fde8d0 !important; }
+    .category-supplement  { background-color: #e8eaf6 !important; }
+
+    /* 合計行 */
+    tr[style*="font-weight:bold"] td {
+        background-color: #f0f0f0 !important;
+        font-weight: bold;
+    }
+
     .print-hide {
         display: none !important;
     }
