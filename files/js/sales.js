@@ -519,6 +519,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
             document.activeElement.blur();
             if (!endExplicit) setDateInputs('end', startDate);
+            setTimeout(function () {
+                readAndAnalyze(fileInput.files[0], startDate, endDate, endExplicit);
+            }, 100);
+
+            if (!endExplicit) setDateInputs('end', startDate);
             readAndAnalyze(fileInput.files[0], startDate, endDate, endExplicit);
         });
     }
@@ -539,9 +544,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 alert('入力が不正です');
                 return;
             }
-
+            
             rerunToggleButton.setAttribute('aria-expanded', 'false');
             rerunDatePanel.classList.remove('visible');
+
+            document.activeElement.blur();
+            if (!endExplicit) setDateInputs('rerun_end', startDate);
+            setTimeout(function () {
+                runAnalysis(cache.content, cache.fileName, startDate, endDate, endExplicit);
+
+                if (startDate) setDateInputs('start', startDate);
+                if (endExplicit && endDate) setDateInputs('end', endDate);
+            }, 100);
 
             runAnalysis(cache.content, cache.fileName, startDate, endDate, endExplicit);
 
