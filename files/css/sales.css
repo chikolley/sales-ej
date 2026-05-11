@@ -227,13 +227,12 @@ a.button:hover {
     align-items: center;
 }
 .date-selector input[type="text"] {
-    width: 80px;
+    flex: 1;
+    min-width: 0;
     padding: 8px;
     text-align: center;
     border: 1px solid #ccc;
     border-radius: 4px;
-
-    /* -moz-appearance: textfield; */
 }
 .date-selector input[type="text"]::-webkit-inner-spin-button,
 .date-selector input[type="text"]::-webkit-outer-spin-button {
@@ -350,13 +349,7 @@ a.button:hover {
 .reset-button i {
     margin: 0;
 }
-.reg-indicator {
-    text-align: center;
-    color: #888;
-    font-size: 14px;
-    margin-top: -16px;
-    margin-bottom: 8px;
-}
+
 .result-actions {
     display: flex;
     gap: 12px;
@@ -618,7 +611,6 @@ a.button:hover {
         padding: 0;
     }
     .container {
-        max-width: none;
         box-shadow: none;
         border-radius: 0;
         min-height: unset;
