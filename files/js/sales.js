@@ -236,7 +236,7 @@ document.addEventListener('DOMContentLoaded', function () {
             regIndicator.textContent = regLabel || '';
             regIndicator.style.display = regLabel ? '' : 'none';
         }
-        
+
         if (!analysisResult || Object.keys(analysisResult).length === 0) {
             resultTables.innerHTML = '<p>指定された期間のデータがありません。</p>';
         } else {
@@ -344,7 +344,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // 表示切り替え
         uploadFormSection.classList.add('hidden');
         resultSection.classList.add('visible');
-
+        if (resetButtonFixed) resetButtonFixed.classList.add('visible');
         rerunDatePanel.classList.remove('visible');
         rerunToggleButton.setAttribute('aria-expanded', 'false');
         journalContent.classList.remove('visible');
@@ -506,19 +506,26 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ---- リセットボタン ----
-    if (resetButton) {
-        resetButton.addEventListener('click', function () {
-            uploadFormSection.classList.remove('hidden');
-            resultSection.classList.remove('visible');
+    const resetButtonFixed = document.getElementById('reset-button-fixed');
 
-            fileInput.value = '';
-            fileNameDisplay.textContent = '';
-            dropZoneText.classList.remove('hidden');
-            clearJournalCache();
-            hideError();
-        });
+    function doReset() {
+        uploadFormSection.classList.remove('hidden');
+        resultSection.classList.remove('visible');
+        if (resetButtonFixed) resetButtonFixed.classList.remove('visible');
+
+        fileInput.value = '';
+        fileNameDisplay.textContent = '';
+        dropZoneText.classList.remove('hidden');
+        clearJournalCache();
+        hideError();
     }
 
+    if (resetButton) {
+        resetButton.addEventListener('click', doReset);
+    }
+    if (resetButtonFixed) {
+        resetButtonFixed.addEventListener('click', doReset);
+    }
     // ---- 当日の日付を初期値にセット ----
     const today  = new Date();
     const todayY = today.getFullYear();
