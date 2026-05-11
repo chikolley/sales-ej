@@ -265,7 +265,7 @@ a.button:hover {
     justify-content: center;
 }
 
-.data-inputs .form-group {
+.date-inputs .form-group {
     flex: 1;
     min-width: 0;
 }
