@@ -156,20 +156,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ---- PDF出力（印刷ダイアログ） ----
     function exportPdf() {
-        // 詳細を非表示にする場合はprint-hideクラスを付与してから印刷
-        const detailSection = document.querySelector('.detailTable');
-        const detailHeader  = detailSection ? detailSection.previousElementSibling : null;
+        const detailTable   = document.querySelector('.detailTable');
+        const detailHeading = document.querySelector('.detail-heading');
 
         if (!includeDetail()) {
-            if (detailSection)  detailSection.classList.add('print-hide');
-            if (detailHeader)   detailHeader.classList.add('print-hide');
+            if (detailTable)   detailTable.classList.add('print-hide');
+            if (detailHeading) detailHeading.classList.add('print-hide');
         }
 
         window.print();
 
-        // 印刷後に戻す
-        if (detailSection)  detailSection.classList.remove('print-hide');
-        if (detailHeader)   detailHeader.classList.remove('print-hide');
+        if (detailTable)   detailTable.classList.remove('print-hide');
+        if (detailHeading) detailHeading.classList.remove('print-hide');
     }
 
     // ---- Excel出力 ----
