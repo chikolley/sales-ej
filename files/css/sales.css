@@ -694,3 +694,26 @@ a.button:hover {
         display: none !important;
     }
 }
+
+/* ---- 終了日オプション ---- */
+.end-date-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
+    user-select: none;
+}
+.end-date-toggle input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+    cursor: pointer;
+}
+.date-field-end .date-selector {
+    margin-top: 10px;
+}
+.date-field-end .date-selector.disabled {
+    opacity: 0.35;
+    pointer-events: none;
+}
