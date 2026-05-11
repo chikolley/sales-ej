@@ -111,7 +111,34 @@ document.addEventListener('DOMContentLoaded', function () {
     setupDateMaxDays('end');
     setupDateMaxDays('rerun_start');
     setupDateMaxDays('rerun_end');
-
+    
+    // ---- マウスホイールで日付入力を増減 ----
+    function setupWheelInput(prefix) {
+        const y = document.getElementById(prefix + '_year_input');
+        const m = document.getElementById(prefix + '_month_input');
+        const d = document.getElementById(prefix + '_day_input');
+    
+        function addWheel(el, min, max) {
+            el.addEventListener('wheel', function (e) {
+                e.preventDefault(); // ページスクロール無効
+                const delta = e.deltaY < 0 ? 1 : -1;
+                let val = parseInt(el.value) || min;
+                val = Math.min(max, Math.max(min, val + delta));
+                el.value = val;
+                el.dispatchEvent(new Event('input')); // maxDays更新などに連動
+            }, { passive: false });
+        }
+    
+        if (y) addWheel(y, 2020, 2100);
+        if (m) addWheel(m, 1, 12);
+        if (d) addWheel(d, 1, 31);
+    }
+    
+    setupWheelInput('start');
+    setupWheelInput('end');
+    setupWheelInput('rerun_start');
+    setupWheelInput('rerun_end');
+    
     // ---- PHPロジック移植: 日付行パース ----
     function parseDateFromLine(line) {
         const m = line.match(/(\d{4})年\s*(\d{1,2})月\s*(\d{1,2})日/);
