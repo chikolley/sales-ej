@@ -613,6 +613,7 @@ a.button:hover {
         padding: 0;
     }
     .container {
+        max-width: none;
         box-shadow: none;
         border-radius: 0;
         min-height: unset;
