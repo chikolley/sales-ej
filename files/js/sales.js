@@ -33,7 +33,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const rerunDatePanel          = document.getElementById('rerun-date-panel');
 
     // ---- 出力用データ保持 ----
-    // export.js から参照できるようにwindowに公開
     window.SalesExportData = {
         analysisResult:  null,
         filteredContent: null,
@@ -43,8 +42,6 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     // ---- レジ自動判定 ----
-    // window.SalesPageMain / SalesPageSub が両方存在する場合（/common/）のみ動作
-    // 片方しかない場合（/main/, /sub/）は各ページ側で設定済みの window.SalesPage をそのまま使う
     function detectAndSetSalesPage(utf8Content) {
         if (!window.SalesPageMain || !window.SalesPageSub) return;
         window.SalesPage = /責任\d+/.test(utf8Content)
@@ -53,8 +50,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ---- SalesPage プロパティへのアクセサ ----
-    // window.SalesPage は readAndAnalyze 後に切り替わる可能性があるため
-    // 毎回 window.SalesPage から参照する
     function getCacheContentKey()  { return window.SalesPage.CACHE_CONTENT_KEY; }
     function getCacheFilenameKey() { return window.SalesPage.CACHE_FILENAME_KEY; }
     function getCategoryClassMap() { return window.SalesPage.CATEGORY_CLASS_MAP; }
@@ -81,7 +76,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function clearJournalCache() {
         try {
-            // 両方のキャッシュキーをクリア（/common/ でのキー切り替えに対応）
             if (window.SalesPageMain) {
                 localStorage.removeItem(window.SalesPageMain.CACHE_CONTENT_KEY);
                 localStorage.removeItem(window.SalesPageMain.CACHE_FILENAME_KEY);
@@ -102,36 +96,36 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!checkbox || !selector) return;
 
         function update() {
-            if (checkbox.checked) {
-                selector.classList.remove('disabled');
-            } else {
-                selector.classList.add('disabled');
-            }
+            selector.classList.toggle('disabled', !checkbox.checked);
         }
 
         checkbox.addEventListener('change', update);
-        update(); // 初期状態を適用
+        update();
     }
 
     setupEndDateToggle('end-date-enable', 'end-date-selector');
     setupEndDateToggle('rerun-end-date-enable', 'rerun-end-date-selector');
 
+    // ---- 終了日が明示指定されているか ----
+    function isEndDateExplicit(prefix) {
+        const cbId = prefix === 'rerun_end' ? 'rerun-end-date-enable' : 'end-date-enable';
+        const cb = document.getElementById(cbId);
+        return cb ? cb.checked : true;
+    }
+
     // ---- 日付ユーティリティ ----
     function getDateString(prefix) {
-        // 終了日の場合はチェックボックスが無効なら開始日と同じ値を返す
-        if (prefix === 'end') {
-            const cb = document.getElementById('end-date-enable');
-            if (cb && !cb.checked) return getDateString('start');
-        }
-        if (prefix === 'rerun_end') {
-            const cb = document.getElementById('rerun-end-date-enable');
-            if (cb && !cb.checked) return getDateString('rerun_start');
-        }
         const y = document.getElementById(prefix + '_year_input').value;
         const m = document.getElementById(prefix + '_month_input').value;
         const d = document.getElementById(prefix + '_day_input').value;
         if (!y || !m || !d) return null;
         return y + '-' + String(m).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+    }
+
+    // 終了日: チェックOFF→開始日と同じ値、チェックON→入力値
+    function getEndDateString(startPrefix, endPrefix) {
+        if (!isEndDateExplicit(endPrefix)) return getDateString(startPrefix);
+        return getDateString(endPrefix);
     }
 
     function setDateInputs(prefix, dateStr) {
@@ -255,13 +249,18 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ---- 結果テーブル描画 ----
-    function renderResults(analysisResult, startDate, endDate, filteredContent) {
+    function renderResults(analysisResult, startDate, endDate, filteredContent, endExplicit) {
         const CATEGORY_CLASS_MAP = getCategoryClassMap();
         const CATEGORY_ORDER     = getCategoryOrder();
 
+        // タイトル: 同じ日付なら1日だけ表示
         let titleText = '分析結果';
-        if (startDate || endDate) {
-            titleText += ' (' + (startDate || '最初') + ' 〜 ' + (endDate || '最後') + ')';
+        if (startDate) {
+            if (!endExplicit || startDate === endDate) {
+                titleText += ' (' + startDate + ')';
+            } else {
+                titleText += ' (' + startDate + ' 〜 ' + endDate + ')';
+            }
         }
         resultTitle.textContent = titleText;
 
@@ -396,37 +395,32 @@ document.addEventListener('DOMContentLoaded', function () {
         rerunToggleButton.setAttribute('aria-expanded', 'false');
         journalContent.classList.remove('visible');
         journalToggleButton.setAttribute('aria-expanded', 'false');
+
+        // rerunパネルの日付・チェックボックスを同期
         if (startDate) setDateInputs('rerun_start', startDate);
-        if (endDate) {
-            const cb = document.getElementById('rerun-end-date-enable');
-            if (cb) cb.checked = true;
-            const sel = document.getElementById('rerun-end-date-selector');
-            if (sel) sel.classList.remove('disabled');
-            setDateInputs('rerun_end', endDate);
-        } else {
-            const cb = document.getElementById('rerun-end-date-enable');
-            if (cb) cb.checked = false;
-            const sel = document.getElementById('rerun-end-date-selector');
-            if (sel) sel.classList.add('disabled');
-        }
+        const rerunCb  = document.getElementById('rerun-end-date-enable');
+        const rerunSel = document.getElementById('rerun-end-date-selector');
+        if (rerunCb)  rerunCb.checked = endExplicit;
+        if (rerunSel) rerunSel.classList.toggle('disabled', !endExplicit);
+        if (endExplicit && endDate) setDateInputs('rerun_end', endDate);
     }
 
     // ---- 分析実行 ----
-    function runAnalysis(utf8Content, fileName, startDate, endDate) {
+    function runAnalysis(utf8Content, fileName, startDate, endDate, endExplicit) {
         setJournalCache(utf8Content, fileName || '');
         const filtered = filterJournalByDate(utf8Content, startDate, endDate);
         const result   = window.SalesPage.parseJournalContent(utf8Content, startDate, endDate);
-        renderResults(result, startDate, endDate, filtered);
+        renderResults(result, startDate, endDate, filtered, endExplicit);
     }
 
     // ---- ファイル読み込み ----
-    function readAndAnalyze(file, startDate, endDate) {
+    function readAndAnalyze(file, startDate, endDate, endExplicit) {
         const reader = new FileReader();
         reader.onload = function (e) {
             const utf8 = decodeFileContent(e.target.result);
-            detectAndSetSalesPage(utf8); // /common/ のみ有効、他は何もしない
+            detectAndSetSalesPage(utf8);
             clearJournalCache();
-            runAnalysis(utf8, file.name, startDate, endDate);
+            runAnalysis(utf8, file.name, startDate, endDate, endExplicit);
         };
         reader.onerror = function () {
             alert('ファイルの読み込みに失敗しました。');
@@ -504,8 +498,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // ---- 分析実行ボタン ----
     if (runButton) {
         runButton.addEventListener('click', function () {
-            const startDate = getDateString('start');
-            const endDate   = getDateString('end');
+            const startDate   = getDateString('start');
+            const endExplicit = isEndDateExplicit('end');
+            const endDate     = getEndDateString('start', 'end');
 
             if (startDate && endDate && endDate < startDate) {
                 alert('入力が不正です');
@@ -517,7 +512,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            readAndAnalyze(fileInput.files[0], startDate, endDate);
+            document.activeElement.blur();
+            readAndAnalyze(fileInput.files[0], startDate, endDate, endExplicit);
         });
     }
 
@@ -529,8 +525,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 alert('保持されたファイル情報がありません。再度ファイルをアップロードしてください。');
                 return;
             }
-            const startDate = getDateString('rerun_start');
-            const endDate   = getDateString('rerun_end');
+            const startDate   = getDateString('rerun_start');
+            const endExplicit = isEndDateExplicit('rerun_end');
+            const endDate     = getEndDateString('rerun_start', 'rerun_end');
 
             if (startDate && endDate && endDate < startDate) {
                 alert('入力が不正です');
@@ -540,10 +537,10 @@ document.addEventListener('DOMContentLoaded', function () {
             rerunToggleButton.setAttribute('aria-expanded', 'false');
             rerunDatePanel.classList.remove('visible');
 
-            runAnalysis(cache.content, cache.fileName, startDate, endDate);
+            runAnalysis(cache.content, cache.fileName, startDate, endDate, endExplicit);
 
             if (startDate) setDateInputs('start', startDate);
-            if (endDate)   setDateInputs('end', endDate);
+            if (endExplicit && endDate) setDateInputs('end', endDate);
         });
     }
 
@@ -578,14 +575,20 @@ document.addEventListener('DOMContentLoaded', function () {
         dropZoneText.classList.remove('hidden');
         clearJournalCache();
         hideError();
+
+        // 終了日チェックボックスをリセット
+        ['end-date-enable', 'rerun-end-date-enable'].forEach(function (id) {
+            const cb = document.getElementById(id);
+            if (cb) {
+                cb.checked = false;
+                cb.dispatchEvent(new Event('change'));
+            }
+        });
     }
 
-    if (resetButton) {
-        resetButton.addEventListener('click', doReset);
-    }
-    if (resetButtonFixed) {
-        resetButtonFixed.addEventListener('click', doReset);
-    }
+    if (resetButton)      resetButton.addEventListener('click', doReset);
+    if (resetButtonFixed) resetButtonFixed.addEventListener('click', doReset);
+
     // ---- 当日の日付を初期値にセット ----
     const today  = new Date();
     const todayY = today.getFullYear();
