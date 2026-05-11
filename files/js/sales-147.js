@@ -580,8 +580,12 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             const startDate = getDateString('rerun_start');
             const endDate   = getDateString('rerun_end');
+    
+            rerunToggleButton.setAttribute('aria-expanded', 'false');
+            rerunDatePanel.classList.remove('visible');
+    
             runAnalysis(cache.content, cache.fileName, startDate, endDate);
-
+    
             if (startDate) setDateInputs('start', startDate);
             if (endDate)   setDateInputs('end', endDate);
         });
