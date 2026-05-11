@@ -538,6 +538,28 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById(prefix + '_day_input').value   = todayD;
     }
 
+    // ---- ヘルプモーダル ----
+    const helpButton = document.getElementById('help-button');
+    const helpModal  = document.getElementById('help-modal');
+    const helpClose  = document.getElementById('help-close');
+
+    if (helpButton && helpModal) {
+        helpButton.addEventListener('click', function () {
+            helpModal.classList.add('visible');
+            helpModal.setAttribute('aria-hidden', 'false');
+        });
+        helpClose.addEventListener('click', function () {
+            helpModal.classList.remove('visible');
+            helpModal.setAttribute('aria-hidden', 'true');
+        });
+        helpModal.addEventListener('click', function (e) {
+            if (e.target === helpModal) {
+                helpModal.classList.remove('visible');
+                helpModal.setAttribute('aria-hidden', 'true');
+            }
+        });
+    }
+    
     // ---- 初期状態 ----
     resultSection.classList.remove('visible');
     uploadFormSection.classList.remove('hidden');

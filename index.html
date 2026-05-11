@@ -131,6 +131,33 @@
         <button id="reset-button-fixed" class="reset-button-fixed" title="別のファイルで計算">
             <i class="fa-solid fa-rotate"></i>
         </button>
+        <!-- ヘルプボタン -->
+        <button id="help-button" class="help-button" title="操作手順">
+            <i class="fa-solid fa-question"></i>
+        </button>
+
+        <!-- ヘルプモーダル -->
+        <div id="help-modal" class="help-modal" aria-hidden="true">
+            <div class="help-modal-inner">
+                <button id="help-close" class="help-close" aria-label="閉じる">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+                <h2>操作手順</h2>
+                <h3>SDカードの取り出し</h3>
+                <h4>メインレジ (XE-A207)</h4>
+                <p>1. モード切替を押す<br>
+                2. SDカードを選択<br>
+                3. 書き込みのみを選択<br>
+                4. 電子ジャーナルを選択<br>
+                5. 実行を選択<br>
+                6. 実行前の画面に戻ったらSDカードを取り出す</p>
+                <h4>サブレジ (XE-A147)</h4>
+                <p>0. 通常通り締め作業（キーを精算に合わせ現/預/替を押す）を行う<br>
+                1. 印字が終わったらSDカードを取り出す</p>
+                <h3>ジャーナル保存場所</h3>
+                <p>SHARP &gt; ECRXXX10/15 &gt; WCOOP &gt; EJ &gt; yymmdd-n &gt; EJFILE.txt</p>
+            </div>
+        </div>
     </main>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/encoding-japanese/2.0.0/encoding.min.js"></script>

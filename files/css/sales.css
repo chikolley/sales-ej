@@ -417,6 +417,73 @@ a.button:hover {
 .reset-button-fixed.visible {
     display: flex;
 }
+
+.help-button {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 1000;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background-color: #90CAF9;
+    color: white;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    transition: background-color 0.2s;
+}
+.help-button:hover {
+    background-color: #64B5F6;
+}
+.help-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    background: rgba(0,0,0,0.4);
+    align-items: center;
+    justify-content: center;
+}
+.help-modal.visible {
+    display: flex;
+}
+.help-modal-inner {
+    background: #fff;
+    border-radius: 12px;
+    padding: 32px;
+    max-width: 480px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+    text-align: left;
+}
+.help-close {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #666;
+    width: auto;
+    height: auto;
+    padding: 4px 8px;
+    margin: 0;
+    border-radius: 4px;
+}
+.help-close:hover {
+    background: #f0f0f0;
+    color: #333;
+}
+
 .desktop-only {
     display: block;
 }
