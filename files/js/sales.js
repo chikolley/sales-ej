@@ -1,4 +1,4 @@
-// Last updated: 2026-05-12 14:30:00
+// Last updated: 2026-05-12 14:45:00
 // ======================================================
 // sales.js - EJジャーナル分析 共通UI・ページ操作
 //
@@ -313,15 +313,34 @@ document.addEventListener('DOMContentLoaded', function () {
                     catAmount += Number(price) * count;
                 }
 
-                if (catQty === 0) continue;
+                const isBread = category === 'パン';
+
+                // パン以外は0件をスキップ
+                if (!isBread && catQty === 0) continue;
 
                 totalQty    += catQty;
                 totalAmount += catAmount;
                 const cls = CATEGORY_CLASS_MAP[category] || '';
+
+                // パンは件数セルを非表示（—表示）、他は通常表示
+                const qtyCell = isBread
+                    ? `<td class="amount">—</td>`
+                    : `<td class="amount">${numFmt(catQty)}</td>`;
+
                 summaryRows += `<tr class="category-${escHtml(cls)}">
                     <td>${escHtml(category)}</td>
-                    <td class="amount">${numFmt(catQty)}</td>
+                    ${qtyCell}
                     <td class="amount">${numFmt(catAmount)}</td>
+                </tr>`;
+            }
+
+            // パンがデータに存在しない場合も行を表示
+            if (!sortedCategories.includes('パン')) {
+                const cls = CATEGORY_CLASS_MAP['パン'] || '';
+                summaryRows += `<tr class="category-${escHtml(cls)}">
+                    <td>パン</td>
+                    <td class="amount">—</td>
+                    <td class="amount">0</td>
                 </tr>`;
             }
 
