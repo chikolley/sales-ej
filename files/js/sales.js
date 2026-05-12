@@ -354,15 +354,15 @@ document.addEventListener('DOMContentLoaded', function () {
             if (paymentStats) {
                 if (paymentStats.cash !== 0) {
                     summaryRows += `<tr style="background-color:#e8f4fd;">
+                        <td>—</td>
                         <td>現金</td>
-                        <td class="amount">—</td>
                         <td class="amount">${numFmt(paymentStats.cash)}</td>
                     </tr>`;
                 }
                 if (paymentStats.credit !== 0) {
                     summaryRows += `<tr style="background-color:#e8f4fd;">
+                        <td>—</td>
                         <td>クレジット</td>
-                        <td class="amount">—</td>
                         <td class="amount">${numFmt(paymentStats.credit)}</td>
                     </tr>`;
                 }
