@@ -1,3 +1,5 @@
+// Last updated: 2026-05-12 15:00:00
+
 // ======================================================
 // sales-207.js - EJジャーナル分析 メインレジ固有設定
 // 共通UI処理は sales.js に記述
@@ -29,10 +31,16 @@ window.SalesPageMain = {
         const SKIP_KEYWORDS = this.SKIP_KEYWORDS;
         const lines         = content.split('\n');
         const categoryStats = {};
+        const paymentStats  = { cash: 0, credit: 0 };
 
         let currentDate      = null;
         let prevQuantityLine = null;
         let pendingRecord    = null;
+
+        // スペース区切り数字を正規化: "\ 6 , 6 0 0" / "\100" → 6600 / 100
+        function parseSpacedAmount(str) {
+            return parseInt(str.replace(/[\s\\¥,]/g, ''), 10) || 0;
+        }
 
         function parseDateFromLine(line) {
             const m = line.match(/(\d{4})年\s*(\d{1,2})月\s*(\d{1,2})日/);
@@ -52,6 +60,7 @@ window.SalesPageMain = {
         for (let rawLine of lines) {
             const line = rawLine.trim();
 
+            // 解除機能により中止 → 直前のレコードを破棄
             if (line.includes('解除機能により中止')) {
                 pendingRecord    = null;
                 prevQuantityLine = null;
@@ -59,6 +68,7 @@ window.SalesPageMain = {
                 continue;
             }
 
+            // 日付行
             const dateStr = parseDateFromLine(line);
             if (dateStr) {
                 commitPending();
@@ -71,12 +81,14 @@ window.SalesPageMain = {
                 continue;
             }
 
+            // 有効な日付範囲外
             if (!currentDate) {
                 commitPending();
                 prevQuantityLine = null;
                 continue;
             }
 
+            // スキップキーワード
             if (SKIP_KEYWORDS.some(kw => line.includes(kw))) {
                 commitPending();
                 currentDate      = null;
@@ -84,7 +96,8 @@ window.SalesPageMain = {
                 continue;
             }
 
-            const qtyMatch = line.match(/^(\d+[,]?\d*)x\s*(\d+)/);
+            // 数量行: "11x 3" / "3,700x 2" / "66x -2"
+            const qtyMatch = line.match(/^(\d+[,]?\d*)x\s*(-?\d+)/);
             if (qtyMatch) {
                 commitPending();
                 prevQuantityLine = {
@@ -94,6 +107,7 @@ window.SalesPageMain = {
                 continue;
             }
 
+            // カテゴリ行（通常）: "グッズ    内 \160" / "グッズ    内 ¥160"
             const normalMatch = line.match(/^([^\s*]+)\s+内\s*[\\¥]([\d,]+)/);
             if (normalMatch) {
                 commitPending();
@@ -114,18 +128,28 @@ window.SalesPageMain = {
                 continue;
             }
 
+            // カテゴリ行（戻品）: "飲料    内戻-500" / "66x -2" + "文具    内 戻-132"
             const returnMatch = line.match(/^([^\s*]+)\s+内\s*戻-([\d,]+)/);
             if (returnMatch) {
                 commitPending();
-                pendingRecord = {
-                    category:  returnMatch[1],
-                    unitPrice: parseInt(returnMatch[2].replace(/,/g, ''), 10),
-                    quantity:  -1,
-                };
-                prevQuantityLine = null;
+                const category = returnMatch[1];
+                const amount   = parseInt(returnMatch[2].replace(/,/g, ''), 10);
+
+                if (prevQuantityLine) {
+                    const { unitPrice, quantity } = prevQuantityLine;
+                    if (unitPrice * Math.abs(quantity) === amount) {
+                        pendingRecord = { category, unitPrice, quantity };
+                    } else {
+                        pendingRecord = { category, unitPrice: amount, quantity: -1 };
+                    }
+                    prevQuantityLine = null;
+                } else {
+                    pendingRecord = { category, unitPrice: amount, quantity: -1 };
+                }
                 continue;
             }
 
+            // 訂正行（カテゴリ付き）: "XXX 内 訂-120"
             const corrMatch = line.match(/^([^\s*]+)\s+内\s*訂-([\d,]+)/);
             if (corrMatch) {
                 commitPending();
@@ -138,6 +162,7 @@ window.SalesPageMain = {
                 continue;
             }
 
+            // 訂正行（カテゴリなし）: "訂 -120"
             const corrFallback = line.match(/^訂\s*-([\d,]+)/);
             if (corrFallback) {
                 commitPending();
@@ -150,13 +175,23 @@ window.SalesPageMain = {
                 continue;
             }
 
-            if (!line.match(/^(\d+[,]?\d*)x\s*(\d+)/)) {
+            // それ以外: 数量行でなければ prevQuantityLine をリセット
+            if (!line.match(/^(\d+[,]?\d*)x\s*(-?\d+)/)) {
                 prevQuantityLine = null;
             }
+
+            // 現金・おつり・クレジット行（スペース区切り数字に対応）
+            const cashMatch   = line.match(/^現金\s+([\\¥ \d,]+)/);
+            const otsriMatch  = line.match(/^おつり\s+([\\¥ \d,]+)/);
+            const creditMatch = line.match(/^クレジット\s+([\\¥ \d,]+)/);
+
+            if (cashMatch)   paymentStats.cash   += parseSpacedAmount(cashMatch[1]);
+            if (otsriMatch)  paymentStats.cash   -= parseSpacedAmount(otsriMatch[1]);
+            if (creditMatch) paymentStats.credit += parseSpacedAmount(creditMatch[1]);
         }
 
         commitPending();
-        return categoryStats;
+        return { categoryStats, paymentStats };
     },
 };
 
