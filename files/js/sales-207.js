@@ -1,5 +1,3 @@
-// Last updated: 2026-05-12 14:30:00
-
 // ======================================================
 // sales-207.js - EJジャーナル分析 メインレジ固有設定
 // 共通UI処理は sales.js に記述
@@ -31,16 +29,10 @@ window.SalesPageMain = {
         const SKIP_KEYWORDS = this.SKIP_KEYWORDS;
         const lines         = content.split('\n');
         const categoryStats = {};
-        const paymentStats  = { cash: 0, credit: 0 };
 
         let currentDate      = null;
         let prevQuantityLine = null;
         let pendingRecord    = null;
-
-        // スペース区切り数字を正規化: "\ 6 , 6 0 0" → 6600
-        function parseSpacedAmount(str) {
-            return parseInt(str.replace(/[\\ ¥,]/g, ''), 10) || 0;
-        }
 
         function parseDateFromLine(line) {
             const m = line.match(/(\d{4})年\s*(\d{1,2})月\s*(\d{1,2})日/);
@@ -92,7 +84,7 @@ window.SalesPageMain = {
                 continue;
             }
 
-            const qtyMatch = line.match(/^(\d+[,]?\d*)x\s*(-?\d+)/);
+            const qtyMatch = line.match(/^(\d+[,]?\d*)x\s*(\d+)/);
             if (qtyMatch) {
                 commitPending();
                 prevQuantityLine = {
@@ -125,20 +117,12 @@ window.SalesPageMain = {
             const returnMatch = line.match(/^([^\s*]+)\s+内\s*戻-([\d,]+)/);
             if (returnMatch) {
                 commitPending();
-                const category = returnMatch[1];
-                const amount   = parseInt(returnMatch[2].replace(/,/g, ''), 10);
-
-                if (prevQuantityLine) {
-                    const { unitPrice, quantity } = prevQuantityLine;
-                    if (unitPrice * Math.abs(quantity) === amount) {
-                        pendingRecord = { category, unitPrice, quantity };
-                    } else {
-                        pendingRecord = { category, unitPrice: amount, quantity: -1 };
-                    }
-                    prevQuantityLine = null;
-                } else {
-                    pendingRecord = { category, unitPrice: amount, quantity: -1 };
-                }
+                pendingRecord = {
+                    category:  returnMatch[1],
+                    unitPrice: parseInt(returnMatch[2].replace(/,/g, ''), 10),
+                    quantity:  -1,
+                };
+                prevQuantityLine = null;
                 continue;
             }
 
@@ -166,22 +150,13 @@ window.SalesPageMain = {
                 continue;
             }
 
-            if (!line.match(/^(\d+[,]?\d*)x\s*(-?\d+)/)) {
+            if (!line.match(/^(\d+[,]?\d*)x\s*(\d+)/)) {
                 prevQuantityLine = null;
             }
-
-            // 現金・おつり・クレジット行
-            const cashMatch   = line.match(/^現金\s+([\\ \d,]+)/);
-            const otsriMatch  = line.match(/^おつり\s+([\\ \d,]+)/);
-            const creditMatch = line.match(/^クレジット\s+([\\ \d,]+)/);
-
-            if (cashMatch)   paymentStats.cash   += parseSpacedAmount(cashMatch[1]);
-            if (otsriMatch)  paymentStats.cash   -= parseSpacedAmount(otsriMatch[1]);
-            if (creditMatch) paymentStats.credit += parseSpacedAmount(creditMatch[1]);
         }
 
         commitPending();
-        return { categoryStats, paymentStats };
+        return categoryStats;
     },
 };
 
