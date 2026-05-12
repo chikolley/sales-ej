@@ -353,12 +353,12 @@ document.addEventListener('DOMContentLoaded', function () {
             // 支払方法行
             if (paymentStats) {
                 summaryRows += `<tr style="background-color:#e8f4fd;">
-                    <td>—</td>
+                    <td></td>
                     <td class="amount">現金</td>
                     <td class="amount">${numFmt(paymentStats.cash)}</td>
                 </tr>`;
                 summaryRows += `<tr style="background-color:#e8f4fd;">
-                    <td>—</td>
+                    <td></td>
                     <td class="amount">クレジット</td>
                     <td class="amount">${numFmt(paymentStats.credit)}</td>
                 </tr>`;
