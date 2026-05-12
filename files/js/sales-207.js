@@ -125,12 +125,20 @@ window.SalesPageMain = {
             const returnMatch = line.match(/^([^\s*]+)\s+内\s*戻-([\d,]+)/);
             if (returnMatch) {
                 commitPending();
-                pendingRecord = {
-                    category:  returnMatch[1],
-                    unitPrice: parseInt(returnMatch[2].replace(/,/g, ''), 10),
-                    quantity:  -1,
-                };
-                prevQuantityLine = null;
+                const category = returnMatch[1];
+                const amount   = parseInt(returnMatch[2].replace(/,/g, ''), 10);
+
+                if (prevQuantityLine) {
+                    const { unitPrice, quantity } = prevQuantityLine;
+                    if (unitPrice * Math.abs(quantity) === amount) {
+                        pendingRecord = { category, unitPrice, quantity };
+                    } else {
+                        pendingRecord = { category, unitPrice: amount, quantity: -1 };
+                    }
+                    prevQuantityLine = null;
+                } else {
+                    pendingRecord = { category, unitPrice: amount, quantity: -1 };
+                }
                 continue;
             }
 
