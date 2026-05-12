@@ -152,7 +152,7 @@ window.SalesPageMain = {
                 continue;
             }
 
-            if (!line.match(/^(\d+[,]?\d*)x\s*(\d+)/)) {
+            if (!line.match(/^(\d+[,]?\d*)x\s*(-?\d+)/)) {
                 prevQuantityLine = null;
             }
         }
