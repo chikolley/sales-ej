@@ -86,7 +86,7 @@ window.SalesPageMain = {
                 continue;
             }
 
-            const qtyMatch = line.match(/^(\d+[,]?\d*)x\s*(\d+)/);
+            const qtyMatch = line.match(/^(\d+[,]?\d*)x\s*(-?\d+)/);
             if (qtyMatch) {
                 commitPending();
                 prevQuantityLine = {
