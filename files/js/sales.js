@@ -1,4 +1,4 @@
-// Last updated: 2026-05-11 11:18:44
+// Last updated: 2026-05-12 14:30:00
 // ======================================================
 // sales.js - EJジャーナル分析 共通UI・ページ操作
 //
@@ -250,7 +250,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ---- 結果テーブル描画 ----
-    function renderResults(analysisResult, startDate, endDate, filteredContent, endExplicit) {
+    function renderResults(analysisResult, paymentStats, startDate, endDate, filteredContent, endExplicit) {
         const CATEGORY_CLASS_MAP = getCategoryClassMap();
         const CATEGORY_ORDER     = getCategoryOrder();
 
@@ -279,6 +279,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // 出力用にデータを保持
         window.SalesExportData.analysisResult  = analysisResult;
+        window.SalesExportData.paymentStats    = paymentStats;
         window.SalesExportData.filteredContent = filteredContent;
         window.SalesExportData.startDate       = startDate;
         window.SalesExportData.endDate         = endDate;
@@ -329,6 +330,24 @@ document.addEventListener('DOMContentLoaded', function () {
                 <td class="amount">${numFmt(totalQty)}</td>
                 <td class="amount">${numFmt(totalAmount)}</td>
             </tr>`;
+
+            // 支払方法行
+            if (paymentStats) {
+                if (paymentStats.cash !== 0) {
+                    summaryRows += `<tr style="background-color:#e8f4fd;">
+                        <td>現金</td>
+                        <td class="amount">—</td>
+                        <td class="amount">${numFmt(paymentStats.cash)}</td>
+                    </tr>`;
+                }
+                if (paymentStats.credit !== 0) {
+                    summaryRows += `<tr style="background-color:#e8f4fd;">
+                        <td>クレジット</td>
+                        <td class="amount">—</td>
+                        <td class="amount">${numFmt(paymentStats.credit)}</td>
+                    </tr>`;
+                }
+            }
 
             // 明細テーブル
             let detailRows = '';
@@ -414,8 +433,13 @@ document.addEventListener('DOMContentLoaded', function () {
     function runAnalysis(utf8Content, fileName, startDate, endDate, endExplicit) {
         setJournalCache(utf8Content, fileName || '');
         const filtered = filterJournalByDate(utf8Content, startDate, endDate);
-        const result   = window.SalesPage.parseJournalContent(utf8Content, startDate, endDate);
-        renderResults(result, startDate, endDate, filtered, endExplicit);
+        const parsed   = window.SalesPage.parseJournalContent(utf8Content, startDate, endDate);
+
+        // 旧形式（categoryStatsのみ返す）との互換性
+        const categoryStats = parsed.categoryStats || parsed;
+        const paymentStats  = parsed.paymentStats  || null;
+
+        renderResults(categoryStats, paymentStats, startDate, endDate, filtered, endExplicit);
     }
 
     // ---- ファイル読み込み ----
@@ -519,11 +543,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
             document.activeElement.blur();
             if (!endExplicit) setDateInputs('end', startDate);
-            setTimeout(function () {
-                readAndAnalyze(fileInput.files[0], startDate, endDate, endExplicit);
-            }, 100);
-
-            if (!endExplicit) setDateInputs('end', startDate);
             readAndAnalyze(fileInput.files[0], startDate, endDate, endExplicit);
         });
     }
@@ -544,18 +563,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 alert('入力が不正です');
                 return;
             }
-            
+
             rerunToggleButton.setAttribute('aria-expanded', 'false');
             rerunDatePanel.classList.remove('visible');
-
-            document.activeElement.blur();
-            if (!endExplicit) setDateInputs('rerun_end', startDate);
-            setTimeout(function () {
-                runAnalysis(cache.content, cache.fileName, startDate, endDate, endExplicit);
-
-                if (startDate) setDateInputs('start', startDate);
-                if (endExplicit && endDate) setDateInputs('end', endDate);
-            }, 100);
 
             runAnalysis(cache.content, cache.fileName, startDate, endDate, endExplicit);
 

@@ -1,5 +1,4 @@
-// Last updated: 2026-05-11 10:56:45
-
+// Last updated: 2026-05-12 14:30:00
 // ======================================================
 // export.js - EJジャーナル分析 出力処理
 // TXT / PDF / Excel (xlsx) の3形式に対応
@@ -135,6 +134,24 @@ document.addEventListener('DOMContentLoaded', function () {
             String(numFmt(totalAmount)).padStart(10)
         );
 
+        // 支払方法
+        if (d.paymentStats) {
+            if (d.paymentStats.cash !== 0) {
+                lines.push(
+                    '現金'.padEnd(10) +
+                    '        ' + '  ' +
+                    String(numFmt(d.paymentStats.cash)).padStart(10)
+                );
+            }
+            if (d.paymentStats.credit !== 0) {
+                lines.push(
+                    'クレジット'.padEnd(10) +
+                    '        ' + '  ' +
+                    String(numFmt(d.paymentStats.credit)).padStart(10)
+                );
+            }
+        }
+
         // 詳細
         if (includeDetail()) {
             lines.push('');
@@ -160,18 +177,14 @@ document.addEventListener('DOMContentLoaded', function () {
     function exportPdf() {
         const detailTable   = document.querySelector('.detailTable');
         const detailHeading = document.querySelector('.detail-heading');
-    
+
         if (!includeDetail()) {
             if (detailTable)   detailTable.classList.add('print-hide');
             if (detailHeading) detailHeading.classList.add('print-hide');
         }
-    
-        const originalTitle = document.title;
-        document.title = getFilenameBase();
-    
+
         window.print();
-    
-        document.title = originalTitle;
+
         if (detailTable)   detailTable.classList.remove('print-hide');
         if (detailHeading) detailHeading.classList.remove('print-hide');
     }
@@ -190,6 +203,10 @@ document.addEventListener('DOMContentLoaded', function () {
             summaryAoa.push([r.category, r.catQty, r.catAmount]);
         }
         summaryAoa.push(['合計', totalQty, totalAmount]);
+        if (d.paymentStats) {
+            if (d.paymentStats.cash !== 0)   summaryAoa.push(['現金', '', d.paymentStats.cash]);
+            if (d.paymentStats.credit !== 0) summaryAoa.push(['クレジット', '', d.paymentStats.credit]);
+        }
         const wsSummary = XLSX.utils.aoa_to_sheet(summaryAoa);
         XLSX.utils.book_append_sheet(wb, wsSummary, 'サマリー');
 
