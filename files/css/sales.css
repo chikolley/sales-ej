@@ -710,6 +710,17 @@ a.button:hover {
     .print-hide {
         display: none !important;
     }
+    .warning-title {
+        font-size: 45pt;
+    }
+    .warning-desc {
+        font-size: 45pt;
+    }
+    .warning-table th,
+    .warning-table td {
+        font-size: 45pt;
+        padding: 12px 18px;
+    }
 }
 
 /* ---- 終了日オプション ---- */
