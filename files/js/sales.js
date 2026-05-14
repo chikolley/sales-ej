@@ -438,6 +438,9 @@ document.addEventListener('DOMContentLoaded', function () {
                         </table>
                     </div>`;
                 warningContainer.style.display = '';
+
+                // ポップアップ表示
+                showWarningPopup(cancelledWithPayment);
             } else {
                 warningContainer.innerHTML = '';
                 warningContainer.style.display = 'none';
@@ -507,6 +510,31 @@ document.addEventListener('DOMContentLoaded', function () {
     // ---- エラー表示 ----
     function hideError() {
         if (errorMessage) errorMessage.style.display = 'none';
+    }
+
+    // ---- 一部入金後解除の警告ポップアップ ----
+    function showWarningPopup(cancelledList) {
+        const modal = document.getElementById('warning-popup-modal');
+        const body  = document.getElementById('warning-popup-body');
+        if (!modal || !body) return;
+
+        let rows = cancelledList.map(tx =>
+            `<tr>
+                <td>${escHtml(tx.date || '')}</td>
+                <td>#${escHtml(tx.txNo || '')}</td>
+                <td class="amount">${numFmt(tx.payment)}</td>
+            </tr>`
+        ).join('');
+
+        body.innerHTML = `
+            <p class="warning-desc">以下のトランザクションはレジ日計に売上・入金として計上されていますが、このツールでは取り消しています。レジ日計との差異が生じます。</p>
+            <table class="warning-table">
+                <thead><tr><th>日付</th><th>No.</th><th class="amount">入金額</th></tr></thead>
+                <tbody>${rows}</tbody>
+            </table>`;
+
+        modal.classList.add('visible');
+        modal.setAttribute('aria-hidden', 'false');
     }
 
     // ---- ドロップゾーン ----
@@ -677,6 +705,25 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById(prefix + '_year_input').value  = todayY;
         document.getElementById(prefix + '_month_input').value = todayM;
         document.getElementById(prefix + '_day_input').value   = todayD;
+    }
+
+    // ---- 警告ポップアップ ----
+    const warningPopupModal = document.getElementById('warning-popup-modal');
+    const warningPopupClose = document.getElementById('warning-popup-close');
+
+    if (warningPopupClose) {
+        warningPopupClose.addEventListener('click', function () {
+            warningPopupModal.classList.remove('visible');
+            warningPopupModal.setAttribute('aria-hidden', 'true');
+        });
+    }
+    if (warningPopupModal) {
+        warningPopupModal.addEventListener('click', function (e) {
+            if (e.target === warningPopupModal) {
+                warningPopupModal.classList.remove('visible');
+                warningPopupModal.setAttribute('aria-hidden', 'true');
+            }
+        });
     }
 
     // ---- ヘルプモーダル ----
