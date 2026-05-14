@@ -599,6 +599,60 @@ a.button:hover {
     cursor: pointer;
 }
 
+/* ---- 終了日オプション ---- */
+.end-date-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
+    user-select: none;
+}
+.end-date-toggle input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+    cursor: pointer;
+}
+.date-field-end .date-selector {
+    margin-top: 10px;
+}
+.date-field-end .date-selector.disabled {
+    opacity: 0.35;
+    pointer-events: none;
+}
+
+/* ---- 一部入金後解除の警告 ---- */
+.cancelled-payment-warning {
+    margin: 28px 0 16px;
+    padding: 16px 18px;
+    border: 2px solid #f5a623;
+    border-radius: 8px;
+    background: #fffbf0;
+}
+.warning-title {
+    font-weight: bold;
+    color: #c8760a;
+    margin: 0 0 8px;
+    font-size: 15px;
+}
+.warning-title i {
+    margin-right: 6px;
+}
+.warning-desc {
+    font-size: 13px;
+    color: #666;
+    margin: 0 0 12px;
+}
+.warning-table {
+    width: 100%;
+}
+.warning-table th,
+.warning-table td {
+    font-size: 13px;
+    padding: 5px 10px;
+}
+
 /* ---- 印刷用CSS (PDF出力) ---- */
 @media print {
     * {
@@ -721,58 +775,4 @@ a.button:hover {
         font-size: 45pt;
         padding: 12px 18px;
     }
-}
-
-/* ---- 終了日オプション ---- */
-.end-date-toggle {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-weight: bold;
-    color: #333;
-    cursor: pointer;
-    user-select: none;
-}
-.end-date-toggle input[type="checkbox"] {
-    width: auto;
-    margin: 0;
-    cursor: pointer;
-}
-.date-field-end .date-selector {
-    margin-top: 10px;
-}
-.date-field-end .date-selector.disabled {
-    opacity: 0.35;
-    pointer-events: none;
-}
-
-/* ---- 一部入金後解除の警告 ---- */
-.cancelled-payment-warning {
-    margin: 28px 0 16px;
-    padding: 16px 18px;
-    border: 2px solid #f5a623;
-    border-radius: 8px;
-    background: #fffbf0;
-}
-.warning-title {
-    font-weight: bold;
-    color: #c8760a;
-    margin: 0 0 8px;
-    font-size: 15px;
-}
-.warning-title i {
-    margin-right: 6px;
-}
-.warning-desc {
-    font-size: 13px;
-    color: #666;
-    margin: 0 0 12px;
-}
-.warning-table {
-    width: 100%;
-}
-.warning-table th,
-.warning-table td {
-    font-size: 13px;
-    padding: 5px 10px;
 }
