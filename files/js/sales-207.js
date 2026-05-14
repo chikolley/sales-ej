@@ -50,12 +50,12 @@ window.SalesPageMain = {
         }
 
         function snapshotStats() {
-            // categoryStatsのディープコピーを保存
+            // categoryStats と paymentStats のディープコピーを保存
             const snap = {};
             for (const cat in categoryStats) {
                 snap[cat] = Object.assign({}, categoryStats[cat]);
             }
-            txSnapshot = snap;
+            txSnapshot = { categoryStats: snap, paymentStats: Object.assign({}, paymentStats) };
         }
 
         function rollbackStats() {
@@ -64,9 +64,11 @@ window.SalesPageMain = {
             for (const cat in categoryStats) {
                 delete categoryStats[cat];
             }
-            for (const cat in txSnapshot) {
-                categoryStats[cat] = Object.assign({}, txSnapshot[cat]);
+            for (const cat in txSnapshot.categoryStats) {
+                categoryStats[cat] = Object.assign({}, txSnapshot.categoryStats[cat]);
             }
+            paymentStats.cash   = txSnapshot.paymentStats.cash;
+            paymentStats.credit = txSnapshot.paymentStats.credit;
             txSnapshot = null;
         }
 
