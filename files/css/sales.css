@@ -758,8 +758,7 @@ a.button:hover {
     margin: 0 0 12px;
 }
 .warning-table {
-    width: auto;
-    min-width: 300px;
+    width: 100%;
 }
 .warning-table th,
 .warning-table td {
