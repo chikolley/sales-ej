@@ -250,7 +250,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ---- 結果テーブル描画 ----
-    function renderResults(analysisResult, paymentStats, startDate, endDate, filteredContent, endExplicit) {
+    function renderResults(analysisResult, paymentStats, cancelledWithPayment, startDate, endDate, filteredContent, endExplicit) {
         const CATEGORY_CLASS_MAP = getCategoryClassMap();
         const CATEGORY_ORDER     = getCategoryOrder();
 
@@ -278,12 +278,13 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // 出力用にデータを保持
-        window.SalesExportData.analysisResult  = analysisResult;
-        window.SalesExportData.paymentStats    = paymentStats;
-        window.SalesExportData.filteredContent = filteredContent;
-        window.SalesExportData.startDate       = startDate;
-        window.SalesExportData.endDate         = endDate;
-        window.SalesExportData.regLabel        = regLabel;
+        window.SalesExportData.analysisResult        = analysisResult;
+        window.SalesExportData.paymentStats          = paymentStats;
+        window.SalesExportData.cancelledWithPayment  = cancelledWithPayment;
+        window.SalesExportData.filteredContent       = filteredContent;
+        window.SalesExportData.startDate             = startDate;
+        window.SalesExportData.endDate               = endDate;
+        window.SalesExportData.regLabel              = regLabel;
 
         if (!analysisResult || Object.keys(analysisResult).length === 0) {
             resultTables.innerHTML = '<p>指定された期間のデータがありません。</p>';
@@ -353,12 +354,12 @@ document.addEventListener('DOMContentLoaded', function () {
             // 支払方法行
             if (paymentStats) {
                 summaryRows += `<tr style="background-color:#e8f4fd;">
-                    <td></td>
+                    <td>—</td>
                     <td class="amount">現金</td>
                     <td class="amount">${numFmt(paymentStats.cash)}</td>
                 </tr>`;
                 summaryRows += `<tr style="background-color:#e8f4fd;">
-                    <td></td>
+                    <td>—</td>
                     <td class="amount">クレジット</td>
                     <td class="amount">${numFmt(paymentStats.credit)}</td>
                 </tr>`;
@@ -414,6 +415,33 @@ document.addEventListener('DOMContentLoaded', function () {
             `;
         }
 
+        // 一部入金後解除の警告
+        const warningContainer = document.getElementById('cancelled-payment-warning');
+        if (warningContainer) {
+            if (cancelledWithPayment && cancelledWithPayment.length > 0) {
+                let rows = cancelledWithPayment.map(tx =>
+                    `<tr>
+                        <td>${escHtml(tx.date || '')}</td>
+                        <td>#${escHtml(tx.txNo || '')}</td>
+                        <td class="amount">${numFmt(tx.payment)}</td>
+                    </tr>`
+                ).join('');
+                warningContainer.innerHTML = `
+                    <div class="cancelled-payment-warning">
+                        <p class="warning-title"><i class="fa-solid fa-triangle-exclamation"></i> 一部入金後に解除されたトランザクションがあります</p>
+                        <p class="warning-desc">以下のトランザクションはレジ日計に売上・入金として計上されていますが、このツールでは取り消しています。レジ日計との差異が生じます。</p>
+                        <table class="warning-table">
+                            <thead><tr><th>日付</th><th>No.</th><th class="amount">入金額</th></tr></thead>
+                            <tbody>${rows}</tbody>
+                        </table>
+                    </div>`;
+                warningContainer.style.display = '';
+            } else {
+                warningContainer.innerHTML = '';
+                warningContainer.style.display = 'none';
+            }
+        }
+
         // ジャーナル表示
         if (filteredContent) {
             journalPre.textContent = filteredContent;
@@ -451,10 +479,11 @@ document.addEventListener('DOMContentLoaded', function () {
         const parsed   = window.SalesPage.parseJournalContent(utf8Content, startDate, endDate);
 
         // 旧形式（categoryStatsのみ返す）との互換性
-        const categoryStats = parsed.categoryStats || parsed;
-        const paymentStats  = parsed.paymentStats  || null;
+        const categoryStats        = parsed.categoryStats        || parsed;
+        const paymentStats         = parsed.paymentStats         || null;
+        const cancelledWithPayment = parsed.cancelledWithPayment || [];
 
-        renderResults(categoryStats, paymentStats, startDate, endDate, filtered, endExplicit);
+        renderResults(categoryStats, paymentStats, cancelledWithPayment, startDate, endDate, filtered, endExplicit);
     }
 
     // ---- ファイル読み込み ----

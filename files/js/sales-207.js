@@ -30,13 +30,18 @@ window.SalesPageMain = {
     parseJournalContent: function (content, startDate, endDate) {
         const SKIP_KEYWORDS = this.SKIP_KEYWORDS;
         const lines         = content.split('\n');
-        const categoryStats = {};
-        const paymentStats  = { cash: 0, credit: 0 };
+        const categoryStats        = {};
+        const paymentStats         = { cash: 0, credit: 0 };
+        const cancelledWithPayment = []; // 一部入金後に解除されたトランザクション
 
         let currentDate      = null;
         let prevQuantityLine = null;
         let pendingRecord    = null;
-        let txSnapshot       = null; // トランザクション開始時のcategoryStatsスナップショット
+        let txSnapshot       = null;
+        let currentTxNo      = null; // 現在のトランザクション番号
+        let currentTxDate    = null; // 現在のトランザクション日付
+        let txHasPayment     = false; // 現在のトランザクションに入金があるか
+        let txPaymentAmount  = 0;    // 現在のトランザクションの入金額
 
         // スペース区切り数字を正規化: "\ 6 , 6 0 0" / "\100" / "\\4,000" → 数値
         function parseSpacedAmount(str) {
@@ -90,6 +95,18 @@ window.SalesPageMain = {
                 prevQuantityLine = null;
                 currentDate      = null;
                 rollbackStats();
+
+                // 一部入金があった場合は警告リストに追加
+                if (txHasPayment) {
+                    cancelledWithPayment.push({
+                        txNo:    currentTxNo,
+                        date:    currentTxDate,
+                        payment: txPaymentAmount,
+                    });
+                }
+
+                txHasPayment    = false;
+                txPaymentAmount = 0;
                 continue;
             }
 
@@ -102,8 +119,18 @@ window.SalesPageMain = {
                 if (startDate && dateStr < startDate) { currentDate = null; txSnapshot = null; continue; }
                 if (endDate   && dateStr > endDate)   { currentDate = null; txSnapshot = null; continue; }
 
-                currentDate = dateStr;
-                snapshotStats(); // トランザクション開始時点を記録
+                currentDate     = dateStr;
+                currentTxDate   = dateStr;
+                txHasPayment    = false;
+                txPaymentAmount = 0;
+                snapshotStats();
+                continue;
+            }
+
+            // トランザクション番号行: "000000#1062       永見"
+            const txNoMatch = line.match(/^000000#(\d+)/);
+            if (txNoMatch) {
+                currentTxNo = txNoMatch[1];
                 continue;
             }
 
@@ -211,13 +238,23 @@ window.SalesPageMain = {
             const otsriMatch  = line.match(/^おつり\s+(.+)/);
             const creditMatch = line.match(/^クレジット\s+(.+)/);
 
-            if (cashMatch)   paymentStats.cash   += parseSpacedAmount(cashMatch[1]);
+            if (cashMatch) {
+                const v = parseSpacedAmount(cashMatch[1]);
+                paymentStats.cash   += v;
+                txHasPayment    = true;
+                txPaymentAmount += v;
+            }
             if (otsriMatch)  paymentStats.cash   -= parseSpacedAmount(otsriMatch[1]);
-            if (creditMatch) paymentStats.credit += parseSpacedAmount(creditMatch[1]);
+            if (creditMatch) {
+                const v = parseSpacedAmount(creditMatch[1]);
+                paymentStats.credit += v;
+                txHasPayment    = true;
+                txPaymentAmount += v;
+            }
         }
 
         commitPending();
-        return { categoryStats, paymentStats };
+        return { categoryStats, paymentStats, cancelledWithPayment };
     },
 };
 
