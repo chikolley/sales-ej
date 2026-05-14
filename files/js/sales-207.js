@@ -30,7 +30,8 @@ window.SalesPageMain = {
         const lines         = content.split('\n');
         const categoryStats        = {};
         const paymentStats         = { cash: 0, credit: 0 };
-        const cancelledWithPayment = []; // 一部入金後に解除されたトランザクション
+        const cancelledWithPayment = [];
+        const everRegistered       = new Set(); // 一度でも登録されたカテゴリ // 一部入金後に解除されたトランザクション
 
         let currentDate      = null;
         let prevQuantityLine = null;
@@ -81,6 +82,7 @@ window.SalesPageMain = {
             if (!categoryStats[category]) categoryStats[category] = {};
             if (!categoryStats[category][unitPrice]) categoryStats[category][unitPrice] = 0;
             categoryStats[category][unitPrice] += quantity;
+            everRegistered.add(category);
             pendingRecord = null;
         }
 
@@ -252,7 +254,7 @@ window.SalesPageMain = {
         }
 
         commitPending();
-        return { categoryStats, paymentStats, cancelledWithPayment };
+        return { categoryStats, paymentStats, cancelledWithPayment, everRegistered };
     },
 };
 

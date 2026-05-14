@@ -249,7 +249,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ---- 結果テーブル描画 ----
-    function renderResults(analysisResult, paymentStats, cancelledWithPayment, startDate, endDate, filteredContent, endExplicit) {
+    function renderResults(analysisResult, paymentStats, cancelledWithPayment, everRegistered, startDate, endDate, filteredContent, endExplicit) {
         const CATEGORY_CLASS_MAP = getCategoryClassMap();
         const CATEGORY_ORDER     = getCategoryOrder();
 
@@ -334,14 +334,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 </tr>`;
             }
 
-            // パンがデータに存在しない場合も行を表示
+            // パンがデータに存在しない場合、一度でも登録されていれば行を表示
             if (!sortedCategories.includes('パン')) {
-                const cls = CATEGORY_CLASS_MAP['パン'] || '';
-                summaryRows += `<tr class="category-${escHtml(cls)}">
-                    <td>パン</td>
-                    <td class="amount">—</td>
-                    <td class="amount">0</td>
-                </tr>`;
+                const wasEverRegistered = !everRegistered || everRegistered.has('パン');
+                if (wasEverRegistered) {
+                    const cls = CATEGORY_CLASS_MAP['パン'] || '';
+                    summaryRows += `<tr class="category-${escHtml(cls)}">
+                        <td>パン</td>
+                        <td class="amount">—</td>
+                        <td class="amount">0</td>
+                    </tr>`;
+                }
             }
 
             summaryRows += `<tr style="font-weight:bold;background-color:#f0f0f0;">
@@ -481,8 +484,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const categoryStats        = parsed.categoryStats        || parsed;
         const paymentStats         = parsed.paymentStats         || null;
         const cancelledWithPayment = parsed.cancelledWithPayment || [];
+        const everRegistered       = parsed.everRegistered       || null;
 
-        renderResults(categoryStats, paymentStats, cancelledWithPayment, startDate, endDate, filtered, endExplicit);
+        renderResults(categoryStats, paymentStats, cancelledWithPayment, everRegistered, startDate, endDate, filtered, endExplicit);
     }
 
     // ---- ファイル読み込み ----
@@ -575,7 +579,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const endDate     = getEndDateString('start', 'end');
 
             if (startDate && endDate && endDate < startDate) {
-                alert('入力が不正です');
+                alert('日付の入力が不正です');
                 return;
             }
 
@@ -603,7 +607,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const endDate     = getEndDateString('rerun_start', 'rerun_end');
 
             if (startDate && endDate && endDate < startDate) {
-                alert('入力が不正です');
+                alert('日付の入力が不正です');
                 return;
             }
 
