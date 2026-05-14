@@ -430,8 +430,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 ).join('');
                 warningContainer.innerHTML = `
                     <div class="cancelled-payment-warning">
-                        <p class="warning-title"><i class="fa-solid fa-triangle-exclamation"></i> 一部入金後に解除されたトランザクションがあります</p>
-                        <p class="warning-desc">以下のトランザクションはレジ日計に売上・入金として計上されていますが、このツールでは取り消しています。レジ日計との差異が生じます。</p>
+                        <p class="warning-title"><i class="fa-solid fa-triangle-exclamation"></i> 一部入金後に取り消された会計があります</p>
+                        <p class="warning-desc">以下の会計はレジ日計に売上・入金として計上されていますが、このツールでは取り消しています。レジ日計との差異が生じます。</p>
                         <table class="warning-table">
                             <thead><tr><th>日付</th><th>No.</th><th class="amount">入金額</th></tr></thead>
                             <tbody>${rows}</tbody>
@@ -527,7 +527,7 @@ document.addEventListener('DOMContentLoaded', function () {
         ).join('');
 
         body.innerHTML = `
-            <p class="warning-desc">以下のトランザクションはレジ日計に売上・入金として計上されていますが、このツールでは取り消しています。レジ日計との差異が生じます。</p>
+            <p class="warning-desc">以下の会計はレジ日計に売上・入金として計上されていますが、このツールでは取り消しています。レジ日計との差異が生じます。</p>
             <table class="warning-table">
                 <thead><tr><th>日付</th><th>No.</th><th class="amount">入金額</th></tr></thead>
                 <tbody>${rows}</tbody>
