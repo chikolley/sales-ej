@@ -89,24 +89,47 @@ window.SalesPageMain = {
         for (let rawLine of lines) {
             const line = rawLine.trim();
 
-            // 解除機能により中止 → トランザクション開始時点にロールバック
+            // 解除機能により中止
             if (line.includes('解除機能により中止')) {
-                pendingRecord    = null;
-                prevQuantityLine = null;
-                currentDate      = null;
-                rollbackStats();
-
-                // 一部入金があった場合は警告リストに追加
                 if (txHasPayment) {
+                    // 一部入金後解除（真phantom）: XE-A207は残額を自動補填して会計完了扱いに
+                    // するため、レジ日計には売上・入金として計上される。ツールでもロールバック
+                    // せずそのまま計上し、二重計上の可能性を警告で知らせる。
+                    commitPending(); // 最後の保留商品を確定
+
+                    // 警告用の内訳（分類・単価・個数）をスナップショット差分から算出
+                    const items = [];
+                    if (txSnapshot) {
+                        for (const cat in categoryStats) {
+                            const snap = txSnapshot.categoryStats[cat] || {};
+                            for (const price in categoryStats[cat]) {
+                                const qty = categoryStats[cat][price] - (snap[price] || 0);
+                                if (qty !== 0) {
+                                    items.push({ category: cat, unitPrice: Number(price), qty });
+                                }
+                            }
+                        }
+                    }
+
                     cancelledWithPayment.push({
                         txNo:    currentTxNo,
                         date:    currentTxDate,
                         payment: txPaymentAmount,
+                        items:   items,
                     });
+
+                    txSnapshot = null; // ロールバックせずスナップショットのみ破棄
+                } else {
+                    // 通常の解除（入金なし・合計0）: 従来どおり開始時点にロールバック
+                    pendingRecord = null;
+                    rollbackStats();
                 }
 
-                txHasPayment    = false;
-                txPaymentAmount = 0;
+                pendingRecord    = null;
+                prevQuantityLine = null;
+                currentDate      = null;
+                txHasPayment     = false;
+                txPaymentAmount  = 0;
                 continue;
             }
 
