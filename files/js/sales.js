@@ -426,14 +426,15 @@ document.addEventListener('DOMContentLoaded', function () {
                         <td>${escHtml(tx.date || '')}</td>
                         <td>#${escHtml(tx.txNo || '')}</td>
                         <td class="amount">${numFmt(tx.payment)}</td>
+                        <td>${formatCancelledItems(tx.items)}</td>
                     </tr>`
                 ).join('');
                 warningContainer.innerHTML = `
                     <div class="cancelled-payment-warning">
-                        <p class="warning-title"><i class="fa-solid fa-triangle-exclamation"></i> 一部入金後に取り消された会計があります</p>
-                        <p class="warning-desc">以下の会計はレジ日計に売上・入金として計上されていますが、このツールでは取り消しています。レジ日計との差異が生じます。</p>
+                        <p class="warning-title"><i class="fa-solid fa-triangle-exclamation"></i> 一部入金後に解除された会計があります</p>
+                        <p class="warning-desc">以下の会計は残額自動補填により二重計上された可能性があります。金額・分類・単価・個数を確認してください。</p>
                         <table class="warning-table">
-                            <thead><tr><th>日付</th><th>No.</th><th class="amount">入金額</th></tr></thead>
+                            <thead><tr><th>日付</th><th>No.</th><th class="amount">金額</th><th>内訳（分類・単価・個数）</th></tr></thead>
                             <tbody>${rows}</tbody>
                         </table>
                     </div>`;
@@ -512,6 +513,14 @@ document.addEventListener('DOMContentLoaded', function () {
         if (errorMessage) errorMessage.style.display = 'none';
     }
 
+    // ---- 解除会計の内訳（分類・単価・個数）を整形 ----
+    function formatCancelledItems(items) {
+        if (!items || items.length === 0) return '—';
+        return items.map(it =>
+            `${escHtml(it.category)} ¥${numFmt(it.unitPrice)} × ${numFmt(it.qty)}個`
+        ).join('<br>');
+    }
+
     // ---- 一部入金後解除の警告ポップアップ ----
     function showWarningPopup(cancelledList) {
         const modal = document.getElementById('warning-popup-modal');
@@ -523,13 +532,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 <td>${escHtml(tx.date || '')}</td>
                 <td>#${escHtml(tx.txNo || '')}</td>
                 <td class="amount">${numFmt(tx.payment)}</td>
+                <td>${formatCancelledItems(tx.items)}</td>
             </tr>`
         ).join('');
 
         body.innerHTML = `
-            <p class="warning-desc">以下の会計はレジ日計に売上・入金として計上されていますが、このツールでは取り消しています。レジ日計との差異が生じます。</p>
+            <p class="warning-desc">以下の会計は残額自動補填により二重計上された可能性があります。金額・分類・単価・個数を確認してください。</p>
             <table class="warning-table">
-                <thead><tr><th>日付</th><th>No.</th><th class="amount">入金額</th></tr></thead>
+                <thead><tr><th>日付</th><th>No.</th><th class="amount">金額</th><th>内訳（分類・単価・個数）</th></tr></thead>
                 <tbody>${rows}</tbody>
             </table>`;
 
