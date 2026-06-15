@@ -122,6 +122,20 @@
                     <!-- 一部入金後解除の警告 -->
                     <div id="cancelled-payment-warning" style="display:none;"></div>
 
+                    <!-- 時間帯別分析 -->
+                    <div id="timeband-section" style="display:none;">
+                        <h3 class="summary-heading" style="margin-top:40px;">時間帯別分析</h3>
+                        <div class="timeband-controls">
+                            <label for="timeband-granularity">時間帯の区切り：</label>
+                            <select id="timeband-granularity">
+                                <option value="30">30分</option>
+                                <option value="60" selected>1時間</option>
+                                <option value="120">2時間</option>
+                            </select>
+                        </div>
+                        <div id="timeband-tables"></div>
+                    </div>
+
                     <!-- ジャーナル表示 -->
                     <div class="journal-display-container" id="journal-display-container" style="display:none;">
                         <button type="button" id="journal-toggle-button" class="journal-toggle-button" aria-expanded="false" aria-controls="journal-content">

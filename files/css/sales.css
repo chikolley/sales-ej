@@ -775,4 +775,99 @@ a.button:hover {
         font-size: 45pt;
         padding: 12px 18px;
     }
+    /* 時間帯別分析は印刷に含めない */
+    #timeband-section {
+        display: none !important;
+    }
+}
+
+/* ============================== */
+/* 時間帯別分析                   */
+/* ============================== */
+.timeband-controls {
+    margin: 12px 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.timeband-controls select {
+    padding: 6px 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: #fff;
+}
+
+/* PC: マトリクス表 */
+.timeband-matrix-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+.timeband-matrix {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+.timeband-matrix th,
+.timeband-matrix td {
+    border: 1px solid #ddd;
+    padding: 8px 12px;
+    white-space: nowrap;
+    text-align: left;
+}
+.timeband-matrix th {
+    background-color: #f7f7f7;
+}
+.timeband-matrix td.amount,
+.timeband-matrix th.amount {
+    text-align: right;
+}
+.timeband-matrix .timeband-total td {
+    font-weight: bold;
+    background-color: #f0f0f0;
+}
+.timeband-legend {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 6px;
+}
+
+/* SP: 時間帯ごとのミニ表（既定では非表示、狭い画面で表示） */
+.timeband-cards {
+    display: none;
+}
+.timeband-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    overflow: hidden;
+}
+.timeband-card-head {
+    background-color: #f0f0f0;
+    font-weight: bold;
+    padding: 8px 12px;
+}
+.timeband-card-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.timeband-card-table th,
+.timeband-card-table td {
+    padding: 6px 12px;
+    border-top: 1px solid #eee;
+    text-align: left;
+}
+.timeband-card-table td.amount,
+.timeband-card-table th.amount {
+    text-align: right;
+}
+
+@media (max-width: 768px) {
+    .timeband-matrix-wrap {
+        display: none;
+    }
+    .timeband-cards {
+        display: block;
+    }
 }
