@@ -248,6 +248,179 @@ document.addEventListener('DOMContentLoaded', function () {
             .replace(/"/g, '&quot;');
     }
 
+    // ---- 時間帯別分析 ----
+    // トランザクション単位に分割（各ブロックは日付行で始まる）
+    function splitTransactions(content) {
+        const lines  = content.split('\n');
+        const blocks = [];
+        let cur = null;
+        for (const raw of lines) {
+            const line = raw.trim();
+            if (parseDateFromLine(line)) {
+                if (cur) blocks.push(cur);
+                const tm = line.match(/(\d{1,2}):(\d{2})/);
+                const minutes = tm ? (parseInt(tm[1], 10) * 60 + parseInt(tm[2], 10)) : null;
+                cur = { minutes: minutes, lines: [line] };
+            } else if (cur) {
+                cur.lines.push(line);
+            }
+        }
+        if (cur) blocks.push(cur);
+        return blocks;
+    }
+
+    function getBandMinutes() {
+        const sel = document.getElementById('timeband-granularity');
+        const v = sel ? parseInt(sel.value, 10) : 60;
+        return (v && v > 0) ? v : 60;
+    }
+
+    function bandLabel(startMin, bandMinutes) {
+        const pad = n => String(n).padStart(2, '0');
+        const sh = Math.floor(startMin / 60), sm = startMin % 60;
+        if (bandMinutes === 60 && sm === 0) return sh + '時台';
+        const end = startMin + bandMinutes;
+        return pad(sh) + ':' + pad(sm) + '–' + pad(Math.floor(end / 60)) + ':' + pad(end % 60);
+    }
+
+    // カテゴリ別の個数・金額を1バンドから取得
+    function bandCatQtyAmt(band, cat) {
+        const pb = band.categoryStats[cat];
+        let q = 0, a = 0;
+        if (pb) for (const p in pb) { q += pb[p]; a += Number(p) * pb[p]; }
+        return { q: q, a: a };
+    }
+
+    // 既存パーサをトランザクション単位で再利用して時間帯別に集計
+    function analyzeByTimeBand(content, bandMinutes) {
+        const parser = window.SalesPage;
+        if (!parser || !content) return { bands: [], categories: [] };
+
+        const bandMap = {}; // startMin -> { count, categoryStats }
+        const catSet  = new Set();
+
+        for (const b of splitTransactions(content)) {
+            if (b.minutes == null) continue;
+            const res = parser.parseJournalContent(b.lines.join('\n'));
+            const cs  = res.categoryStats || res;
+
+            let qty = 0, amt = 0;
+            for (const cat in cs) for (const p in cs[cat]) { qty += cs[cat][p]; amt += Number(p) * cs[cat][p]; }
+
+            const startMin = Math.floor(b.minutes / bandMinutes) * bandMinutes;
+            if (!bandMap[startMin]) bandMap[startMin] = { count: 0, categoryStats: {} };
+            const band = bandMap[startMin];
+
+            for (const cat in cs) {
+                catSet.add(cat);
+                if (!band.categoryStats[cat]) band.categoryStats[cat] = {};
+                for (const p in cs[cat]) {
+                    band.categoryStats[cat][p] = (band.categoryStats[cat][p] || 0) + cs[cat][p];
+                }
+            }
+            // 売上のある会計のみカウント（両替・入金なし解除は0なので除外される）
+            if (qty !== 0 || amt !== 0) band.count++;
+        }
+
+        const CATEGORY_ORDER = getCategoryOrder();
+        const categories = [...catSet].sort((a, b) => {
+            if (!CATEGORY_ORDER) return a.localeCompare(b);
+            const ia = CATEGORY_ORDER.indexOf(a), ib = CATEGORY_ORDER.indexOf(b);
+            return (ia === -1 ? CATEGORY_ORDER.length : ia) - (ib === -1 ? CATEGORY_ORDER.length : ib);
+        });
+
+        const bands = Object.keys(bandMap).map(Number).sort((a, b) => a - b)
+            .filter(startMin => bandMap[startMin].count > 0) // 売上のない空バンド（両替のみ等）は除外
+            .map(startMin => ({
+                startMin:      startMin,
+                label:         bandLabel(startMin, bandMinutes),
+                count:         bandMap[startMin].count,
+                categoryStats: bandMap[startMin].categoryStats,
+            }));
+
+        return { bands: bands, categories: categories };
+    }
+
+    // PC向け: 時間帯×カテゴリのマトリクス表（各セル「個数 / 金額」）
+    function buildTimeBandMatrix(bands, categories) {
+        const CCM = getCategoryClassMap();
+        let head = '<th>時間帯</th><th class="amount">会計件数</th>';
+        for (const c of categories) {
+            head += `<th class="amount category-${escHtml(CCM[c] || '')}">${escHtml(c)}</th>`;
+        }
+        head += '<th class="amount">金額合計</th>';
+
+        const totals = { count: 0, cat: {}, amt: 0 };
+        let rows = '';
+        for (const b of bands) {
+            let bandAmt = 0, cells = '';
+            for (const c of categories) {
+                const { q, a } = bandCatQtyAmt(b, c);
+                bandAmt += a;
+                totals.cat[c] = totals.cat[c] || { q: 0, a: 0 };
+                totals.cat[c].q += q; totals.cat[c].a += a;
+                const qd = (c === 'パン') ? '—' : numFmt(q);
+                cells += `<td class="amount">${(q !== 0 || a !== 0) ? qd + ' / ¥' + numFmt(a) : '—'}</td>`;
+            }
+            totals.count += b.count; totals.amt += bandAmt;
+            rows += `<tr><td>${escHtml(b.label)}</td><td class="amount">${numFmt(b.count)}</td>${cells}<td class="amount">¥${numFmt(bandAmt)}</td></tr>`;
+        }
+
+        let tcells = '';
+        for (const c of categories) {
+            const t = totals.cat[c] || { q: 0, a: 0 };
+            const qd = (c === 'パン') ? '—' : numFmt(t.q);
+            tcells += `<td class="amount">${qd} / ¥${numFmt(t.a)}</td>`;
+        }
+        const totalRow = `<tr class="timeband-total"><td>合計</td><td class="amount">${numFmt(totals.count)}</td>${tcells}<td class="amount">¥${numFmt(totals.amt)}</td></tr>`;
+
+        return `<div class="timeband-matrix-wrap">
+            <table class="timeband-matrix">
+                <thead><tr>${head}</tr></thead>
+                <tbody>${rows}${totalRow}</tbody>
+            </table>
+            <p class="timeband-legend">各カテゴリのセル：個数 / 金額</p>
+        </div>`;
+    }
+
+    // SP向け: 時間帯ごとのミニ表
+    function buildTimeBandCards(bands, categories) {
+        const CCM = getCategoryClassMap();
+        let html = '<div class="timeband-cards">';
+        for (const b of bands) {
+            let body = '', bandAmt = 0;
+            for (const c of categories) {
+                const { q, a } = bandCatQtyAmt(b, c);
+                if (q === 0 && a === 0) continue;
+                bandAmt += a;
+                const qd = (c === 'パン') ? '—' : numFmt(q);
+                body += `<tr class="category-${escHtml(CCM[c] || '')}"><td>${escHtml(c)}</td><td class="amount">${qd}</td><td class="amount">¥${numFmt(a)}</td></tr>`;
+            }
+            html += `<div class="timeband-card">
+                <div class="timeband-card-head">${escHtml(b.label)}　会計${numFmt(b.count)}件　¥${numFmt(bandAmt)}</div>
+                <table class="timeband-card-table">
+                    <thead><tr><th>分類</th><th class="amount">個数</th><th class="amount">金額</th></tr></thead>
+                    <tbody>${body || '<tr><td colspan="3">—</td></tr>'}</tbody>
+                </table>
+            </div>`;
+        }
+        return html + '</div>';
+    }
+
+    function renderTimeBand(content) {
+        const section   = document.getElementById('timeband-section');
+        const container = document.getElementById('timeband-tables');
+        if (!section || !container) return;
+
+        if (!content || !window.SalesPage) { section.style.display = 'none'; return; }
+
+        const { bands, categories } = analyzeByTimeBand(content, getBandMinutes());
+        if (bands.length === 0) { section.style.display = 'none'; return; }
+
+        section.style.display = '';
+        container.innerHTML = buildTimeBandMatrix(bands, categories) + buildTimeBandCards(bands, categories);
+    }
+
     // ---- 結果テーブル描画 ----
     function renderResults(analysisResult, paymentStats, cancelledWithPayment, everRegistered, startDate, endDate, filteredContent, endExplicit) {
         const CATEGORY_CLASS_MAP = getCategoryClassMap();
@@ -447,6 +620,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 warningContainer.style.display = 'none';
             }
         }
+
+        // 時間帯別分析
+        renderTimeBand(filteredContent);
 
         // ジャーナル表示
         if (filteredContent) {
@@ -733,6 +909,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 warningPopupModal.classList.remove('visible');
                 warningPopupModal.setAttribute('aria-hidden', 'true');
             }
+        });
+    }
+
+    // ---- 時間帯別分析: 区切り変更で再描画 ----
+    const timebandGranularity = document.getElementById('timeband-granularity');
+    if (timebandGranularity) {
+        timebandGranularity.addEventListener('change', function () {
+            renderTimeBand(window.SalesExportData.filteredContent);
         });
     }
 
